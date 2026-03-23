@@ -1,0 +1,2578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrameLink — Photographer Job Network</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   FRAMELINK — Warm Editorial Dark
+   Inspired by Magnum Photos × A24 × Aperture Magazine
+   Sora + Playfair Display · Deep charcoal + amber gold
+═══════════════════════════════════════════════════════ */
+:root {
+  --bg:      #111110;
+  --bg2:     #181816;
+  --surface: #1d1d1b;
+  --s1:      #222220;
+  --s2:      #282826;
+  --s3:      #2e2e2c;
+  --s4:      #363634;
+
+  --b1:      rgba(255,255,255,.07);
+  --b2:      rgba(255,255,255,.11);
+  --b3:      rgba(255,255,255,.18);
+
+  --gold:    #d4913a;
+  --gold2:   #e8a84a;
+  --gold3:   #f5c46a;
+  --gold-lt: rgba(212,145,58,.1);
+  --gold-mid:rgba(212,145,58,.22);
+  --gold-glow:0 0 20px rgba(212,145,58,.18);
+
+  --text:  #ede8df;
+  --t2:    #a09890;
+  --t3:    #6a6460;
+  --t4:    #3a3630;
+
+  --green:    #4ade80;
+  --green-lt: rgba(74,222,128,.1);
+  --red:      #f87171;
+  --red-lt:   rgba(248,113,113,.1);
+  --amber:    #fbbf24;
+  --amber-lt: rgba(251,191,36,.1);
+  --blue:     #93c5fd;
+  --blue-lt:  rgba(147,197,253,.1);
+
+  --r:   6px;
+  --r2:  10px;
+  --r3:  16px;
+  --sidebar: 244px;
+  --topbar:  56px;
+  --ease: cubic-bezier(.4,0,.2,1);
+
+  --sh1: 0 1px 3px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.4);
+  --sh2: 0 4px 16px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.35);
+  --sh3: 0 16px 48px rgba(0,0,0,.65),0 4px 12px rgba(0,0,0,.4);
+  --sh-gold: 0 0 0 1px rgba(212,145,58,.25),0 4px 24px rgba(212,145,58,.12);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Sora',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;font-size:14px;
+  -webkit-font-smoothing:antialiased;line-height:1.5;
+}
+
+/* Subtle noise texture on bg */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+
+/* ── SCREENS ── */
+.app-shell{display:none;min-height:100vh;}
+.app-shell.active{display:flex;flex-direction:column;}
+.auth-screen{display:none;min-height:100vh;background:var(--bg);flex-direction:column;}
+.auth-screen.active{display:flex;animation:fadeUp .3s var(--ease);}
+.page{display:none;}
+.page.active{display:block;animation:fadeUp .22s var(--ease);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--topbar);z-index:200;
+  background:rgba(17,17,16,.92);border-bottom:1px solid var(--b1);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  display:flex;align-items:center;padding:0 20px;gap:14px;
+}
+.topbar-logo{
+  font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;
+  color:var(--gold2);letter-spacing:-.3px;flex-shrink:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold3) 0%,var(--gold2) 50%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.topbar-search{flex:1;max-width:340px;position:relative;}
+.topbar-search input{
+  width:100%;padding:7px 13px 7px 34px;
+  background:var(--s1);border:1px solid var(--b2);border-radius:var(--r2);
+  font-family:'Sora',sans-serif;font-size:.8rem;color:var(--text);outline:none;
+  transition:all .18s;
+}
+.topbar-search input:focus{background:var(--s2);border-color:var(--gold-mid);box-shadow:0 0 0 3px rgba(212,145,58,.08);}
+.topbar-search input::placeholder{color:var(--t3);}
+.topbar-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.82rem;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.tb-av{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  color:var(--bg);font-weight:700;font-size:.78rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;
+  border:1.5px solid var(--gold-mid);transition:border-color .15s;
+}
+.tb-av:hover{border-color:var(--gold2);}
+.tb-av img{width:100%;height:100%;object-fit:cover;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:fixed;top:var(--topbar);left:0;bottom:0;width:var(--sidebar);
+  background:var(--surface);border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;z-index:100;overflow-y:auto;
+}
+.sidebar-profile{
+  padding:18px 16px 14px;border-bottom:1px solid var(--b1);
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+  background:linear-gradient(160deg,var(--s1) 0%,var(--surface) 100%);
+}
+.sp-av{
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  color:var(--bg);display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:1.15rem;cursor:pointer;overflow:hidden;
+  border:2.5px solid var(--gold-mid);box-shadow:var(--gold-glow);transition:box-shadow .18s;
+}
+.sp-av:hover{box-shadow:0 0 28px rgba(212,145,58,.3);}
+.sp-av img{width:100%;height:100%;object-fit:cover;}
+.sp-name{font-size:.8125rem;font-weight:700;color:var(--text);text-align:center;line-height:1.3;}
+.sp-role{font-size:.67rem;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;font-weight:600;}
+.sp-loc{font-size:.7rem;color:var(--t3);}
+
+.nav-section{padding:8px 0;}
+.nav-section-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--t4);padding:6px 16px 4px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 16px;
+  color:var(--t2);font-size:.8rem;font-weight:500;cursor:pointer;
+  transition:all .14s;border-left:2.5px solid transparent;
+}
+.nav-item:hover{color:var(--text);background:var(--s1);}
+.nav-item.active{color:var(--gold2);background:var(--gold-lt);border-left-color:var(--gold);font-weight:600;}
+.nav-icon{font-size:.9rem;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;min-width:17px;height:17px;border-radius:9px;
+  background:var(--red);color:#fff;font-size:.6rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+}
+.nav-divider{height:1px;background:var(--b1);margin:4px 0;}
+
+/* ── MAIN AREA ── */
+.main-area{
+  margin-left:var(--sidebar);margin-top:var(--topbar);
+  min-height:calc(100vh - var(--topbar));padding:26px 22px;
+  max-width:calc(var(--sidebar) + 900px);position:relative;z-index:1;
+}
+
+/* ── AUTH SCREENS ── */
+.auth-nav{
+  height:var(--topbar);background:rgba(17,17,16,.95);border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;padding:0 28px;
+  backdrop-filter:blur(12px);
+}
+.auth-nav-logo{
+  font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;
+  background:linear-gradient(135deg,var(--gold3),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;}
+.auth-card{
+  background:var(--surface);border:1px solid var(--b2);border-radius:var(--r3);
+  padding:36px;width:100%;max-width:440px;box-shadow:var(--sh3);
+}
+.auth-card h1{
+  font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--text);
+  margin-bottom:4px;font-weight:700;
+}
+.auth-card .auth-sub{color:var(--t2);font-size:.85rem;margin-bottom:26px;}
+.onboard-wrap{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;}
+.onboard-card{
+  background:var(--surface);border:1px solid var(--b2);border-radius:var(--r3);
+  padding:36px;width:100%;max-width:640px;box-shadow:var(--sh3);
+}
+.onboard-card h1{font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:4px;}
+.onboard-card .sub{color:var(--t2);font-size:.85rem;margin-bottom:22px;}
+
+/* ── BUTTONS ── */
+.btn{
+  padding:8px 18px;border-radius:var(--r);font-family:'Sora',sans-serif;
+  font-size:.78rem;font-weight:600;cursor:pointer;border:none;
+  transition:all .15s var(--ease);display:inline-flex;align-items:center;gap:6px;
+  white-space:nowrap;letter-spacing:.1px;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold2) 0%,var(--gold) 100%);
+  color:var(--bg);box-shadow:0 2px 12px rgba(212,145,58,.2);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(212,145,58,.35);}
+.btn-outline{background:transparent;color:var(--gold2);border:1.5px solid var(--gold-mid);}
+.btn-outline:hover{background:var(--gold-lt);border-color:var(--gold);}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--b2);}
+.btn-ghost:hover{border-color:var(--b3);color:var(--text);background:var(--s1);}
+.btn-light{background:var(--s2);color:var(--t2);border:1px solid var(--b1);}
+.btn-light:hover{background:var(--s3);color:var(--text);}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid rgba(248,113,113,.25);}
+.btn-sm{padding:5px 12px;font-size:.72rem;}
+.btn-lg{padding:11px 26px;font-size:.88rem;}
+.btn-full{width:100%;justify-content:center;}
+
+/* ── INPUTS ── */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:.7rem;font-weight:600;color:var(--t2);margin-bottom:5px;letter-spacing:.2px;text-transform:uppercase;}
+.field input,.field textarea,.field select{
+  width:100%;padding:9px 12px;background:var(--s1);border:1.5px solid var(--b2);
+  border-radius:var(--r);color:var(--text);font-family:'Sora',sans-serif;font-size:.83rem;
+  transition:border-color .15s,box-shadow .15s;outline:none;resize:vertical;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--gold-mid);box-shadow:0 0 0 3px rgba(212,145,58,.08);background:var(--s2);
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--t3);}
+.field select option{background:var(--s2);color:var(--text);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);box-shadow:var(--sh1);}
+.card-body{padding:20px;}
+
+/* ── ACCOUNT TYPE PICKER ── */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.type-tile{
+  padding:20px 14px;border:2px solid var(--b2);border-radius:var(--r2);
+  cursor:pointer;transition:all .17s;text-align:center;background:var(--s1);
+}
+.type-tile:hover{border-color:var(--gold-mid);background:var(--s2);}
+.type-tile.sel{border-color:var(--gold);background:var(--gold-lt);box-shadow:var(--sh-gold);}
+.type-tile .tt-icon{font-size:1.9rem;display:block;margin-bottom:9px;}
+.type-tile .tt-name{font-weight:700;font-size:.85rem;color:var(--text);}
+.type-tile .tt-desc{font-size:.7rem;color:var(--t3);margin-top:3px;}
+
+/* ── DIVIDER ── */
+.divider{display:flex;align-items:center;gap:12px;margin:14px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b1);}
+.divider span{font-size:.68rem;color:var(--t3);}
+
+/* ── TAGS & PILLS ── */
+.tag{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;
+  font-size:.68rem;font-weight:600;background:var(--gold-lt);color:var(--gold2);border:1px solid var(--gold-mid);
+}
+.tag .tag-x{cursor:pointer;opacity:.5;font-size:.75rem;}
+.tag .tag-x:hover{opacity:1;}
+.tags-row{display:flex;flex-wrap:wrap;gap:5px;min-height:20px;margin-top:5px;}
+.tag-input-wrap{display:flex;gap:7px;margin-bottom:5px;}
+.tag-input-wrap input{
+  flex:1;padding:7px 11px;background:var(--s1);border:1.5px solid var(--b2);
+  border-radius:var(--r);font-family:'Sora',sans-serif;font-size:.8rem;color:var(--text);outline:none;
+  transition:border-color .15s;
+}
+.tag-input-wrap input:focus{border-color:var(--gold-mid);}
+
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:.67rem;font-weight:600;}
+.pill-green{background:var(--green-lt);color:var(--green);}
+.pill-gold{background:var(--gold-lt);color:var(--gold2);}
+.pill-amber{background:var(--amber-lt);color:var(--amber);}
+.pill-gray{background:var(--s3);color:var(--t3);border:1px solid var(--b1);}
+.pill-red{background:var(--red-lt);color:var(--red);}
+.pill-blue{background:var(--blue-lt);color:var(--blue);}
+
+/* ── PROGRESS STEPS ── */
+.progress-steps{display:flex;gap:4px;margin-bottom:24px;align-items:center;}
+.ps{height:3px;flex:1;border-radius:2px;background:var(--b2);transition:background .3s;}
+.ps.done{background:var(--gold);}
+.step-note{font-size:.67rem;color:var(--t3);margin-left:8px;white-space:nowrap;}
+
+/* ── AVATAR UPLOAD ── */
+.avatar-zone{display:flex;flex-direction:column;align-items:center;margin-bottom:20px;}
+.av-ring{
+  width:90px;height:90px;border-radius:50%;
+  background:var(--s2);border:2px dashed var(--b2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;position:relative;transition:all .15s;
+}
+.av-ring:hover{border-color:var(--gold);box-shadow:var(--gold-glow);}
+.av-ring img{width:100%;height:100%;object-fit:cover;}
+.av-ring .av-icon{font-size:1.9rem;}
+.av-ring .av-ov{
+  position:absolute;inset:0;background:rgba(17,17,16,.65);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .15s;font-size:.62rem;color:#fff;font-weight:600;flex-direction:column;gap:2px;
+}
+.av-ring:hover .av-ov{opacity:1;}
+.av-note{font-size:.68rem;color:var(--t3);margin-top:7px;}
+
+/* ── EXP BLOCK ── */
+.exp-block{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:13px;margin-bottom:10px;position:relative;}
+.exp-del{position:absolute;top:9px;right:9px;background:none;border:none;color:var(--t3);cursor:pointer;font-size:1rem;transition:color .12s;}
+.exp-del:hover{color:var(--red);}
+
+/* ── PAGE HEADERS ── */
+.page-title{font-family:'Playfair Display',serif;font-size:1.55rem;color:var(--text);margin-bottom:4px;font-weight:700;}
+.page-sub{font-size:.78rem;color:var(--t3);margin-bottom:18px;}
+.title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+
+/* ── SEARCH ROW ── */
+.search-row{display:flex;gap:8px;margin-bottom:18px;}
+.search-box{flex:1;position:relative;}
+.search-box input{
+  width:100%;padding:9px 13px 9px 34px;background:var(--surface);border:1.5px solid var(--b2);
+  border-radius:var(--r);color:var(--text);font-family:'Sora',sans-serif;font-size:.83rem;outline:none;transition:all .15s;
+}
+.search-box input:focus{border-color:var(--gold-mid);box-shadow:0 0 0 3px rgba(212,145,58,.07);background:var(--s1);}
+.search-box input::placeholder{color:var(--t3);}
+.search-box-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.82rem;}
+
+/* ── JOB BOARD ── */
+.job-board-layout{display:flex;gap:18px;}
+.job-feed{flex:1;min-width:0;}
+.job-sidebar-panel{width:234px;flex-shrink:0;}
+
+.job-card{
+  background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:18px;margin-bottom:10px;box-shadow:var(--sh1);
+  transition:all .18s var(--ease);position:relative;overflow:hidden;
+}
+.job-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2.5px;background:transparent;transition:background .18s;}
+.job-card.clickable{cursor:pointer;}
+.job-card.clickable:hover{border-color:var(--gold-mid);transform:translateY(-1px);box-shadow:var(--sh2);}
+.job-card.clickable:hover::before{background:linear-gradient(to bottom,var(--gold3),var(--gold));}
+
+.jc-head{display:flex;gap:12px;margin-bottom:11px;align-items:flex-start;}
+.jc-logo{
+  width:44px;height:44px;border-radius:var(--r);flex-shrink:0;
+  background:var(--s2);border:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+}
+.jc-title{font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:2px;}
+.jc-co{font-size:.76rem;color:var(--gold2);font-weight:600;}
+.jc-applied{font-size:.68rem;color:var(--green);font-weight:600;margin-top:2px;}
+.jc-meta{
+  display:flex;gap:14px;flex-wrap:wrap;padding:9px 0;
+  border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);margin-bottom:10px;
+}
+.jc-m{font-size:.72rem;color:var(--t2);display:flex;align-items:center;gap:4px;}
+.jc-desc{font-size:.78rem;color:var(--t2);line-height:1.65;margin-bottom:10px;}
+.jc-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.jc-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.jc-tag{padding:2px 8px;border-radius:20px;font-size:.66rem;font-weight:500;background:var(--s2);border:1px solid var(--b1);color:var(--t2);}
+
+.source-badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:.63rem;font-weight:700;}
+.ext-arrow{font-size:.65rem;color:var(--t3);font-style:italic;}
+
+.feed-section-head{
+  display:flex;align-items:center;gap:10px;margin:16px 0 10px;
+}
+.feed-section-head span:first-child{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);white-space:nowrap;}
+.feed-section-head div{flex:1;height:1px;background:var(--b1);}
+.feed-section-count{font-size:.66rem;color:var(--gold);font-weight:600;white-space:nowrap;}
+
+.fl-empty{
+  background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:28px;text-align:center;margin-bottom:10px;
+}
+.fl-empty-icon{font-size:1.8rem;opacity:.2;margin-bottom:8px;}
+.fl-empty-title{font-weight:700;font-size:.875rem;color:var(--text);margin-bottom:4px;}
+.fl-empty-sub{font-size:.75rem;color:var(--t3);line-height:1.55;}
+
+.crawl-notice{
+  background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--gold-mid);
+  border-radius:var(--r);padding:10px 13px;margin-bottom:12px;
+  display:flex;gap:9px;align-items:flex-start;
+}
+.crawl-notice-icon{font-size:.82rem;flex-shrink:0;margin-top:1px;}
+.crawl-notice-title{font-size:.72rem;font-weight:700;color:var(--gold2);margin-bottom:2px;}
+.crawl-notice-body{font-size:.69rem;color:var(--t2);line-height:1.5;}
+
+/* ── FILTER SIDEBAR ── */
+.filter-card{
+  background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:14px 16px;margin-bottom:10px;box-shadow:var(--sh1);
+}
+.filter-title{
+  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--t3);margin-bottom:10px;
+}
+.filter-check{
+  display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;
+  font-size:.78rem;color:var(--t2);border-radius:var(--r);transition:background .12s;
+}
+.filter-check:hover{background:var(--s1);color:var(--text);}
+.filter-check input{accent-color:var(--gold);width:13px;height:13px;flex-shrink:0;}
+.filter-count{margin-left:auto;font-size:.65rem;color:var(--t3);font-weight:600;}
+
+.strength-card{
+  background:linear-gradient(135deg,var(--gold-lt) 0%,var(--s1) 100%);
+  border:1px solid var(--gold-mid);border-radius:var(--r2);padding:14px 16px;
+  margin-bottom:10px;
+}
+.strength-label{font-size:.72rem;font-weight:700;color:var(--gold2);margin-bottom:4px;}
+.strength-sub{font-size:.68rem;color:var(--t2);margin-bottom:10px;line-height:1.5;}
+.strength-bar{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.strength-fill{height:100%;background:linear-gradient(90deg,var(--gold) 0%,var(--gold3) 100%);border-radius:3px;transition:width .4s var(--ease);}
+.strength-pct{font-size:.67rem;color:var(--gold);margin-top:5px;font-weight:600;}
+
+/* ── MODAL ── */
+.overlay{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  animation:fadein .15s ease;
+}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border:1px solid var(--b2);border-radius:var(--r3);
+  width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh3);
+  animation:modalin .22s var(--ease);
+}
+@keyframes modalin{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{padding:22px 22px 0;display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.modal-header h2{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--text);}
+.modal-x{
+  background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);color:var(--t2);
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.85rem;transition:all .12s;flex-shrink:0;margin-left:10px;
+}
+.modal-x:hover{background:var(--red-lt);border-color:rgba(248,113,113,.3);color:var(--red);}
+.modal-body{padding:0 22px 22px;}
+
+/* ── PROFILE PAGE ── */
+.profile-page{max-width:760px;}
+.profile-banner-wrap{border-radius:var(--r2);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh2);position:relative;}
+.profile-banner-img{
+  height:200px;
+  background:linear-gradient(135deg,#1a0e00 0%,#3d2200 40%,#1a1000 100%);
+  background-size:cover;background-position:center;position:relative;
+}
+.profile-banner-img::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 60%,rgba(17,17,16,.9) 100%);
+  pointer-events:none;
+}
+.banner-edit-btn{
+  position:absolute;bottom:12px;right:12px;z-index:2;
+  background:rgba(17,17,16,.7);color:var(--text);border:1px solid var(--b2);
+  border-radius:var(--r);padding:5px 10px;font-size:.68rem;font-weight:600;cursor:pointer;
+  backdrop-filter:blur(6px);transition:background .15s;font-family:'Sora',sans-serif;
+}
+.banner-edit-btn:hover{background:rgba(17,17,16,.9);}
+.profile-meta-strip{background:var(--surface);padding:0 22px 20px;}
+.profile-av-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.profile-av-wrap{margin-top:-40px;position:relative;z-index:2;}
+.profile-av{
+  width:82px;height:82px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  color:var(--bg);display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:1.8rem;
+  border:4px solid var(--surface);overflow:hidden;box-shadow:var(--sh-gold);cursor:pointer;position:relative;
+}
+.profile-av img{width:100%;height:100%;object-fit:cover;}
+.profile-av-overlay{
+  position:absolute;inset:0;background:rgba(17,17,16,.6);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .15s;font-size:.6rem;color:#fff;font-weight:600;flex-direction:column;gap:2px;
+}
+.profile-av:hover .profile-av-overlay{opacity:1;}
+.profile-name{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:var(--text);margin-top:10px;margin-bottom:2px;}
+.profile-headline{font-size:.83rem;color:var(--gold2);margin-bottom:6px;font-weight:500;}
+.profile-loc-row{display:flex;gap:14px;flex-wrap:wrap;font-size:.74rem;color:var(--t2);}
+.profile-loc-row a{color:var(--gold);text-decoration:none;}
+.profile-loc-row a:hover{text-decoration:underline;}
+.profile-stats-row{display:flex;gap:0;border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-top:14px;}
+.pstat{flex:1;padding:10px 14px;text-align:center;border-right:1px solid var(--b1);}
+.pstat:last-child{border-right:none;}
+.pstat-n{font-weight:700;font-size:.95rem;color:var(--gold2);}
+.pstat-l{font-size:.64rem;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:1px;}
+
+.section-block{
+  background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:20px;margin-bottom:12px;box-shadow:var(--sh1);
+}
+.section-block h3{
+  font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--t3);
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.section-block h3::after{content:'';flex:1;height:1px;background:var(--b1);}
+.section-block h3 .edit-link{
+  margin-left:auto;font-size:.7rem;color:var(--gold);cursor:pointer;font-weight:600;text-transform:none;letter-spacing:0;
+}
+.section-block h3 .edit-link:hover{text-decoration:underline;}
+
+/* Portfolio */
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.portfolio-thumb{aspect-ratio:1;border-radius:var(--r);overflow:hidden;cursor:pointer;background:var(--s2);border:1px solid var(--b1);position:relative;}
+.portfolio-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .22s;}
+.portfolio-thumb:hover img{transform:scale(1.05);}
+.portfolio-thumb .thumb-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.portfolio-thumb:hover .thumb-overlay{opacity:1;}
+.thumb-del{background:rgba(248,113,113,.85);color:#fff;border:none;border-radius:var(--r);padding:5px 9px;font-size:.68rem;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;}
+.portfolio-add{aspect-ratio:1;border-radius:var(--r);border:2px dashed var(--b2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);gap:5px;transition:all .15s;background:var(--s1);}
+.portfolio-add:hover{border-color:var(--gold-mid);color:var(--gold2);background:var(--gold-lt);}
+.portfolio-add span{font-size:1.3rem;}
+.portfolio-add p{font-size:.68rem;font-weight:600;}
+
+/* Exp entries */
+.exp-entry{padding:12px 0;border-bottom:1px solid var(--b1);display:flex;gap:12px;}
+.exp-entry:last-child{border-bottom:none;padding-bottom:0;}
+.exp-icon{width:34px;height:34px;border-radius:var(--r);background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.exp-body{flex:1;min-width:0;}
+.exp-role{font-weight:700;font-size:.83rem;color:var(--text);}
+.exp-co{font-size:.75rem;color:var(--gold2);margin-top:1px;font-weight:500;}
+.exp-dates{font-size:.68rem;color:var(--t3);margin-top:1px;}
+
+/* ── LISTINGS (Business) ── */
+.listings-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.lstat{background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);padding:14px 16px;box-shadow:var(--sh1);}
+.lstat-n{font-size:1.45rem;font-weight:800;color:var(--gold2);letter-spacing:-.02em;}
+.lstat-l{font-size:.65rem;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-top:1px;}
+
+/* ── MESSAGES ── */
+.msg-layout{
+  display:flex;height:calc(100vh - var(--topbar) - 50px);min-height:500px;
+  background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);
+  overflow:hidden;box-shadow:var(--sh2);
+}
+.convo-panel{width:272px;flex-shrink:0;border-right:1px solid var(--b1);display:flex;flex-direction:column;background:var(--s1);}
+.convo-panel-head{padding:14px 16px;border-bottom:1px solid var(--b1);font-weight:700;font-size:.83rem;color:var(--text);background:var(--surface);}
+.convo-list{overflow-y:auto;flex:1;}
+.convo-row{padding:12px 14px;border-bottom:1px solid var(--b1);cursor:pointer;display:flex;gap:10px;align-items:center;transition:background .1s;}
+.convo-row:hover{background:var(--s2);}
+.convo-row.active{background:var(--gold-lt);border-left:2.5px solid var(--gold);}
+.cr-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);color:var(--bg);font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.cr-av img{width:100%;height:100%;object-fit:cover;}
+.cr-name{font-weight:600;font-size:.78rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cr-preview{font-size:.68rem;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.cr-job{font-size:.64rem;color:var(--gold);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cr-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;}
+
+.chat-area{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg2);}
+.chat-header{padding:12px 18px;border-bottom:1px solid var(--b1);background:var(--surface);display:flex;align-items:center;gap:10px;}
+.chat-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.chat-av img{width:100%;height:100%;object-fit:cover;}
+.chat-header-name{font-weight:700;font-size:.83rem;color:var(--text);}
+.chat-header-sub{font-size:.66rem;color:var(--t3);}
+
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.msg-wrap{display:flex;flex-direction:column;max-width:68%;}
+.msg-wrap.me{align-self:flex-end;align-items:flex-end;}
+.msg-wrap.them{align-self:flex-start;align-items:flex-start;}
+.msg-sender{font-size:.64rem;color:var(--t3);font-weight:600;padding:0 4px;margin-bottom:2px;}
+.msg-bubble{padding:8px 13px;border-radius:14px;font-size:.78rem;line-height:1.55;word-break:break-word;}
+.msg-wrap.me .msg-bubble{
+  background:linear-gradient(135deg,var(--gold2) 0%,var(--gold) 100%);
+  color:var(--bg);border-radius:14px 14px 3px 14px;font-weight:500;
+}
+.msg-wrap.them .msg-bubble{background:var(--s2);border:1px solid var(--b2);color:var(--text);border-radius:14px 14px 14px 3px;}
+.msg-time{font-size:.62rem;color:var(--t4);padding:0 4px;margin-top:3px;}
+
+.chat-input-bar{padding:12px 14px;border-top:1px solid var(--b1);background:var(--surface);display:flex;gap:8px;align-items:flex-end;}
+.chat-textarea{
+  flex:1;padding:9px 12px;background:var(--s1);border:1.5px solid var(--b2);border-radius:var(--r2);
+  color:var(--text);font-family:'Sora',sans-serif;font-size:.78rem;
+  outline:none;resize:none;max-height:120px;min-height:38px;transition:border-color .15s;line-height:1.5;
+}
+.chat-textarea:focus{border-color:var(--gold-mid);background:var(--s2);}
+.chat-textarea::placeholder{color:var(--t3);}
+.chat-send{
+  width:38px;height:38px;border-radius:var(--r);flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  border:none;color:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:.88rem;transition:all .14s;
+}
+.chat-send:hover{transform:scale(1.06);box-shadow:0 2px 12px rgba(212,145,58,.4);}
+.chat-empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);gap:8px;}
+.chat-empty-icon{font-size:2.2rem;opacity:.15;}
+
+/* ── APPLICANT CARDS ── */
+.applicant-card{
+  background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:18px;margin-bottom:10px;display:flex;gap:14px;box-shadow:var(--sh1);transition:border-color .15s;
+}
+.applicant-card:hover{border-color:var(--gold-mid);}
+.app-av{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  color:var(--bg);font-weight:700;font-size:.92rem;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid var(--gold-mid);
+}
+.app-av img{width:100%;height:100%;object-fit:cover;}
+.app-name{font-weight:700;font-size:.875rem;color:var(--text);}
+.app-headline{font-size:.74rem;color:var(--gold2);font-weight:500;margin-top:1px;}
+.app-meta{font-size:.68rem;color:var(--t3);margin-top:1px;}
+.app-letter{font-size:.75rem;color:var(--t2);line-height:1.65;margin-top:9px;padding:9px 12px;background:var(--s1);border-radius:var(--r);border-left:2.5px solid var(--gold-mid);}
+.app-specs{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;}
+
+/* ── EDIT FORM ── */
+.edit-form-section{background:var(--surface);border:1px solid var(--b1);border-radius:var(--r2);padding:18px;margin-bottom:12px;box-shadow:var(--sh1);}
+.edit-section-title{font-weight:700;font-size:.78rem;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--b1);}
+
+/* ── LANDING ── */
+.landing-hero{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:72px 24px 48px;position:relative;overflow:hidden;
+  background:var(--bg);
+}
+.landing-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 30%, rgba(212,145,58,.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+.landing-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(212,145,58,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,145,58,.03) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 40%,black 0%,transparent 100%);
+}
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:20px;
+  background:var(--gold-lt);border:1px solid var(--gold-mid);
+  font-size:.68rem;font-weight:700;color:var(--gold2);letter-spacing:.6px;text-transform:uppercase;
+  margin-bottom:22px;position:relative;z-index:1;
+}
+.hero-kicker span{width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);}
+.landing-hero h1{
+  font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5.5vw,3.8rem);
+  font-weight:700;line-height:1.1;max-width:760px;margin-bottom:18px;
+  color:var(--text);letter-spacing:-.02em;position:relative;z-index:1;
+}
+.landing-hero h1 em{font-style:italic;color:var(--gold2);}
+.landing-hero p{font-size:.9375rem;color:var(--t2);max-width:460px;margin:0 auto 32px;line-height:1.75;position:relative;z-index:1;}
+.hero-ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;}
+.hero-stats{
+  display:flex;margin-top:52px;position:relative;z-index:1;
+  border:1px solid var(--b2);border-radius:var(--r2);overflow:hidden;
+  background:var(--surface);box-shadow:var(--sh2);
+}
+.hero-stat{padding:16px 28px;text-align:center;border-right:1px solid var(--b1);}
+.hero-stat:last-child{border-right:none;}
+.hero-stat-n{
+  font-family:'Playfair Display',serif;font-size:1.65rem;font-weight:700;
+  color:var(--gold2);display:block;
+}
+.hero-stat-l{font-size:.66rem;color:var(--t3);margin-top:1px;text-transform:uppercase;letter-spacing:.5px;}
+.landing-features{display:flex;border-top:1px solid var(--b1);background:var(--surface);}
+.lf-item{flex:1;padding:16px 20px;border-right:1px solid var(--b1);display:flex;align-items:center;gap:11px;}
+.lf-item:last-child{border-right:none;}
+.lf-icon{width:32px;height:32px;border-radius:var(--r);background:var(--gold-lt);border:1px solid var(--gold-mid);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.lf-text p{font-size:.75rem;font-weight:600;color:var(--text);}
+.lf-text span{font-size:.67rem;color:var(--t3);}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:20px;right:20px;z-index:9999;
+  background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);
+  padding:11px 15px;font-size:.76rem;display:flex;align-items:center;gap:9px;
+  max-width:300px;box-shadow:var(--sh3);
+  animation:toastIn .25s var(--ease),toastOut .25s var(--ease) 2.8s forwards;
+  pointer-events:none;
+}
+.toast-bar{width:3px;height:26px;border-radius:2px;flex-shrink:0;}
+@keyframes toastIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{to{transform:translateX(110%);opacity:0}}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:48px 20px;color:var(--t3);}
+.empty-icon{font-size:2.2rem;opacity:.18;margin-bottom:10px;}
+.empty-state p{font-size:.78rem;margin-bottom:14px;}
+
+hr{border:none;border-top:1px solid var(--b1);margin:12px 0;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px;}
+input[type="file"]{display:none;}
+.avatar-upload-input{display:none;}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .main-area{margin-left:0;}
+  .job-board-layout{flex-direction:column;}
+  .job-sidebar-panel{width:100%;}
+  .form-row{grid-template-columns:1fr;}
+  .portfolio-grid{grid-template-columns:repeat(2,1fr);}
+  .landing-features{flex-wrap:wrap;}
+  .lf-item{min-width:50%;}
+  .hero-stats{flex-wrap:wrap;}
+}
+</style>
+
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     AUTH SCREENS
+════════════════════════════════════════════ -->
+
+<!-- LANDING -->
+<div id="sc-landing" class="auth-screen active"><div class="auth-nav">
+    <div class="auth-nav-logo">Frame<em>Link</em></div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="topbar-btn" onclick="goAuth('sc-login')">Sign In</button>
+      <button class="btn btn-primary btn-sm" onclick="goAuth('sc-signup')">Join Free</button>
+    </div>
+  </div>
+  <div class="landing-hero">
+    <div class="hero-kicker"><span></span> The Photographer Job Network</div>
+    <h1>Where <em>great photography</em><br>finds its opportunity</h1>
+    <p>The professional marketplace built specifically for photographers and the businesses who hire them. Real jobs. Real connections.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary btn-lg" onclick="goAuth('sc-signup')">Get Started Free →</button>
+      <button class="btn btn-ghost btn-lg" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)" onclick="demoLogin('photographer')">📷 Photographer Demo</button>
+      <button class="btn btn-ghost btn-lg" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)" onclick="demoLogin('business')">🏢 Business Demo</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><span class="hstat-n">2.4K</span><div class="hstat-l">Photographers</div></div>
+      <div class="hstat"><span class="hstat-n">840</span><div class="hstat-l">Companies</div></div>
+      <div class="hstat"><span class="hstat-n">1.2K</span><div class="hstat-l">Jobs Posted</div></div>
+      <div class="hstat"><span class="hstat-n">97%</span><div class="hstat-l">Satisfaction</div></div>
+    </div>
+  </div>
+  <div class="hero-features">
+    <div class="hf"><div class="hf-icon">📷</div><div class="hf-text"><p>Smart Matching</p><span>Skills &amp; style alignment</span></div></div>
+    <div class="hf"><div class="hf-icon">💬</div><div class="hf-text"><p>Direct Messaging</p><span>Communicate in-platform</span></div></div>
+    <div class="hf"><div class="hf-icon">🖼️</div><div class="hf-text"><p>Portfolio Showcase</p><span>Display your best work</span></div></div>
+    <div class="hf"><div class="hf-icon">🌐</div><div class="hf-text"><p>Daily Job Feed</p><span>Curated from 12+ sources</span></div></div>
+  </div>
+<!-- SIGN UP -->
+<div id="sc-signup" class="auth-screen">
+  <div class="auth-nav">
+    <div class="auth-nav-logo">Frame<em>Link</em></div>
+    <button class="topbar-btn" style="margin-left:auto" onclick="goAuth('sc-landing')">← Back</button>
+  </div>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Create your account</h1>
+      <p>Join thousands of photographers and companies</p>
+      <div class="type-grid">
+        <div class="type-tile" id="tt-photographer" onclick="pickType('photographer')">
+          <span class="tt-icon">📷</span>
+          <div class="tt-name">Photographer</div>
+          <div class="tt-desc">Find work & showcase my portfolio</div>
+        </div>
+        <div class="type-tile" id="tt-business" onclick="pickType('business')">
+          <span class="tt-icon">🏢</span>
+          <div class="tt-name">Business</div>
+          <div class="tt-desc">Find and hire photography talent</div>
+        </div>
+      </div>
+      <div class="field"><label>Full Name / Business Name</label><input id="su-name" type="text" placeholder="e.g. Alex Rivera or Bloom Studio"></div>
+      <div class="field"><label>Email Address</label><input id="su-email" type="email" placeholder="hello@example.com"></div>
+      <div class="field"><label>Password</label><input id="su-pass" type="password" placeholder="Minimum 6 characters"></div>
+      <button class="btn btn-primary btn-full" onclick="doSignup()">Create Account →</button>
+      <div class="divider"><span>already have an account?</span></div>
+      <button class="btn btn-ghost btn-full" onclick="goAuth('sc-login')">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="sc-login" class="auth-screen">
+  <div class="auth-nav">
+    <div class="auth-nav-logo">Frame<em>Link</em></div>
+    <button class="topbar-btn" style="margin-left:auto" onclick="goAuth('sc-landing')">← Back</button>
+  </div>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p>Sign in to your FrameLink account</p>
+      <div class="field"><label>Email</label><input id="li-email" type="email" placeholder="hello@example.com"></div>
+      <div class="field"><label>Password</label><input id="li-pass" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-primary btn-full" style="margin-bottom:12px" onclick="doLogin()">Sign In →</button>
+      <div class="divider"><span>or try a demo</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:.78rem" onclick="demoLogin('photographer')">📷 Photographer</button>
+        <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:.78rem" onclick="demoLogin('business')">🏢 Business</button>
+      </div>
+      <p style="text-align:center;margin-top:14px;font-size:.78rem;color:var(--t3)">No account? <a onclick="goAuth('sc-signup')" style="color:var(--blue);cursor:pointer;font-weight:600">Sign up free</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARD PHOTOGRAPHER -->
+<div id="sc-onboard-photo" class="auth-screen">
+  <div class="auth-nav"><div class="auth-nav-logo">Frame<em>Link</em></div></div>
+  <div class="onboard-wrap">
+    <div class="onboard-card">
+      <h1>Set up your profile</h1>
+      <p class="sub">Let's build your photographer profile to attract great opportunities</p>
+      <div class="progress-steps">
+        <div class="ps" id="op1"></div><div class="ps" id="op2"></div><div class="ps" id="op3"></div>
+        <span class="step-note" id="op-note">Step 1 of 3 — Basic Info</span>
+      </div>
+      <div id="op-step1">
+        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px">
+          <div style="width:88px;height:88px;border-radius:50%;background:var(--s2);border:2px dashed var(--b2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;transition:all .15s" id="op-av-ring" onclick="document.getElementById('op-av-file').click()">
+            <span id="op-av-icon" style="font-size:1.8rem">📷</span>
+            <img id="op-av-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0">
+            <div style="position:absolute;inset:0;background:rgba(10,102,194,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;font-size:.65rem;color:#fff;font-weight:600" id="op-av-overlay">Change</div>
+          </div>
+          <p style="font-size:.72rem;color:var(--t3);margin-top:7px">Click to upload profile photo</p>
+          <input type="file" id="op-av-file" accept="image/*" onchange="handleAvUpload('op',this)">
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Full Name</label><input id="op-name" type="text" placeholder="Alex Rivera"></div>
+          <div class="field"><label>Professional Title</label><input id="op-title" type="text" placeholder="Wedding Photographer"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Location</label><input id="op-loc" type="text" placeholder="Austin, TX"></div>
+          <div class="field"><label>Website</label><input id="op-web" type="text" placeholder="yoursite.com"></div>
+        </div>
+        <div class="field"><label>Bio</label><textarea id="op-bio" rows="3" placeholder="Describe your style, experience, and what drives your photography…"></textarea></div>
+        <button class="btn btn-primary btn-full" onclick="opStep(2)">Continue →</button>
+      </div>
+      <div id="op-step2" style="display:none">
+        <div style="font-weight:700;font-size:.875rem;margin-bottom:14px">Work Experience</div>
+        <div id="op-exp-list"></div>
+        <button class="btn btn-light btn-sm" style="margin-bottom:16px" onclick="addOpExp()">+ Add Experience</button>
+        <div class="field"><label>Resume (PDF)</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('op-res-file').click()">📎 Upload Resume</button>
+            <span id="op-res-name" style="font-size:.78rem;color:var(--t3)">No file chosen</span>
+            <input type="file" id="op-res-file" accept=".pdf" onchange="if(this.files[0]){document.getElementById('op-res-name').textContent=this.files[0].name;S.photoProfile.resumeName=this.files[0].name;}">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="opStep(1)">← Back</button>
+          <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="opStep(3)">Continue →</button>
+        </div>
+      </div>
+      <div id="op-step3" style="display:none">
+        <div style="font-weight:700;font-size:.875rem;margin-bottom:14px">Equipment &amp; Skills</div>
+        <div class="field"><label>Camera Bodies</label>
+          <div class="tag-input-wrap"><input id="ti-cam" placeholder="e.g. Sony A7 IV" onkeydown="tkAdd('cameras',event)"><button class="btn btn-light btn-sm" onclick="tkAdd('cameras')">Add</button></div>
+          <div class="tags-row" id="tw-cameras"></div>
+        </div>
+        <div class="field"><label>Lenses</label>
+          <div class="tag-input-wrap"><input id="ti-lens" placeholder="e.g. 85mm f/1.4" onkeydown="tkAdd('lenses',event)"><button class="btn btn-light btn-sm" onclick="tkAdd('lenses')">Add</button></div>
+          <div class="tags-row" id="tw-lenses"></div>
+        </div>
+        <div class="field"><label>Editing Software</label>
+          <div class="tag-input-wrap"><input id="ti-sw" placeholder="e.g. Lightroom" onkeydown="tkAdd('software',event)"><button class="btn btn-light btn-sm" onclick="tkAdd('software')">Add</button></div>
+          <div class="tags-row" id="tw-software"></div>
+        </div>
+        <div class="field"><label>Specialties</label>
+          <div class="tag-input-wrap"><input id="ti-spec" placeholder="e.g. Wedding, Portrait" onkeydown="tkAdd('specialties',event)"><button class="btn btn-light btn-sm" onclick="tkAdd('specialties')">Add</button></div>
+          <div class="tags-row" id="tw-specialties"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="opStep(2)">← Back</button>
+          <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="finishPhotoOnboard()">Complete Setup →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARD BUSINESS -->
+<div id="sc-onboard-biz" class="auth-screen">
+  <div class="auth-nav"><div class="auth-nav-logo">Frame<em>Link</em></div></div>
+  <div class="onboard-wrap">
+    <div class="onboard-card">
+      <h1>Set up your company</h1>
+      <p class="sub">Tell photographers about your business and what you're looking for</p>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px">
+        <div style="width:88px;height:88px;border-radius:50%;background:var(--s2);border:2px dashed var(--b2);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;transition:all .15s" id="ob-av-ring" onclick="document.getElementById('ob-av-file').click()">
+          <span id="ob-av-icon" style="font-size:1.8rem">🏢</span>
+          <img id="ob-av-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0">
+          <div style="position:absolute;inset:0;background:rgba(10,102,194,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;font-size:.65rem;color:#fff;font-weight:600" id="ob-av-overlay">Change</div>
+        </div>
+        <p style="font-size:.72rem;color:var(--t3);margin-top:7px">Click to upload company logo</p>
+        <input type="file" id="ob-av-file" accept="image/*" onchange="handleAvUpload('ob',this)">
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Company Name</label><input id="ob-name" type="text" placeholder="Bloom Creative Studio"></div>
+        <div class="field"><label>Industry</label><select id="ob-ind"><option value="">Select…</option><option>Photography Studio</option><option>Marketing Agency</option><option>E-Commerce / Retail</option><option>Media &amp; Publishing</option><option>Event Management</option><option>Real Estate</option><option>Fashion &amp; Apparel</option><option>Food &amp; Beverage</option><option>Other</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Location</label><input id="ob-loc" type="text" placeholder="New York, NY"></div>
+        <div class="field"><label>Website</label><input id="ob-web" type="text" placeholder="https://yourcompany.com"></div>
+      </div>
+      <div class="field"><label>Company Size</label><select id="ob-size"><option value="">Select…</option><option>1–10 employees</option><option>11–50 employees</option><option>51–200 employees</option><option>201–500 employees</option><option>500+ employees</option></select></div>
+      <div class="field"><label>About Your Company</label><textarea id="ob-bio" rows="4" placeholder="Describe your business, the content you create, and what you look for in photographers…"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="finishBizOnboard()">Go to Dashboard →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PHOTOGRAPHER DASHBOARD
+════════════════════════════════════════════ -->
+<div id="app-photo" class="app-shell">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-logo">Frame<em>Link</em></div>
+    <div class="topbar-search">
+      <span class="topbar-search-icon">🔍</span>
+      <input id="topbar-search-p" placeholder="Search jobs, companies…" oninput="onTopSearch(this.value)">
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="pNav('messages')">💬 Messages</button>
+      <div class="tb-av" id="p-topav" onclick="pNav('profile')"></div>
+      <button class="topbar-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-profile">
+      <div class="sp-av" id="p-sidebar-av" onclick="pNav('profile')"></div>
+      <div class="sp-name" id="p-sidebar-name"></div>
+      <div class="sp-role">Photographer</div>
+      <div class="sp-loc" id="p-sidebar-loc"></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" id="pni-jobs" onclick="pNav('jobs')"><span class="nav-icon">🔍</span> Browse Jobs</div>
+      <div class="nav-item" id="pni-applications" onclick="pNav('applications')"><span class="nav-icon">📋</span> My Applications</div>
+      <div class="nav-item" id="pni-messages" onclick="pNav('messages')"><span class="nav-icon">💬</span> Messages <span class="nav-badge" id="p-msg-badge" style="display:none">!</span></div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-label">Profile</div>
+      <div class="nav-item" id="pni-profile" onclick="pNav('profile')"><span class="nav-icon">👤</span> My Profile</div>
+      <div class="nav-item" id="pni-edit" onclick="pNav('edit')"><span class="nav-icon">✏️</span> Edit Profile</div>
+    </div>
+  </div>
+  <!-- Main -->
+  <div class="main-area">
+    <div class="page active" id="p-page-jobs"></div>
+    <div class="page" id="p-page-applications"></div>
+    <div class="page" id="p-page-messages"></div>
+    <div class="page" id="p-page-profile"></div>
+    <div class="page" id="p-page-edit"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     BUSINESS DASHBOARD
+════════════════════════════════════════════ -->
+<div id="app-biz" class="app-shell">
+  <div class="topbar">
+    <div class="topbar-logo">Frame<em>Link</em></div>
+    <div class="topbar-search">
+      <span class="topbar-search-icon">🔍</span>
+      <input placeholder="Search applicants, listings…">
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="bNav('messages')">💬 Messages</button>
+      <div class="tb-av" id="b-topav" onclick="bNav('profile')"></div>
+      <button class="topbar-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-profile">
+      <div class="sp-av" id="b-sidebar-av" onclick="bNav('profile')"></div>
+      <div class="sp-name" id="b-sidebar-name"></div>
+      <div class="sp-role">Business Account</div>
+      <div class="sp-loc" id="b-sidebar-loc"></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Recruiting</div>
+      <div class="nav-item active" id="bni-listings" onclick="bNav('listings')"><span class="nav-icon">📁</span> My Listings</div>
+      <div class="nav-item" id="bni-post" onclick="bNav('post')"><span class="nav-icon">✚</span> Post a Job</div>
+      <div class="nav-item" id="bni-applicants" onclick="bNav('applicants')"><span class="nav-icon">👥</span> Applicants</div>
+      <div class="nav-item" id="bni-messages" onclick="bNav('messages')"><span class="nav-icon">💬</span> Messages <span class="nav-badge" id="b-msg-badge" style="display:none">!</span></div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-section-label">Company</div>
+      <div class="nav-item" id="bni-profile" onclick="bNav('profile')"><span class="nav-icon">🏢</span> Company Profile</div>
+      <div class="nav-item" id="bni-edit" onclick="bNav('edit')"><span class="nav-icon">✏️</span> Edit Profile</div>
+    </div>
+  </div>
+  <div class="main-area">
+    <div class="page active" id="b-page-listings"></div>
+    <div class="page" id="b-page-post"></div>
+    <div class="page" id="b-page-applicants"></div>
+    <div class="page" id="b-page-messages"></div>
+    <div class="page" id="b-page-profile"></div>
+    <div class="page" id="b-page-edit"></div>
+  </div>
+</div>
+
+<!-- Job Detail Modal -->
+<div id="job-overlay" class="overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="job-modal-inner"></div>
+</div>
+
+<input type="file" id="global-av-input" accept="image/*" class="avatar-upload-input">
+<input type="file" id="global-banner-input" accept="image/*" class="avatar-upload-input">
+<input type="file" id="portfolio-file-input" accept="image/*" multiple class="avatar-upload-input">
+
+<script>
+// ═══════════════════════════════
+// STORAGE
+// ═══════════════════════════════
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+  del: k => localStorage.removeItem(k)
+};
+
+function loadAccounts() { return LS.get('fl3_accounts') || {}; }
+function saveAccounts() { LS.set('fl3_accounts', accounts); }
+function loadJobs() {
+  // Only returns jobs posted by real business accounts on FrameLink.
+  // No filler — board populates as businesses sign up and post.
+  const j = LS.get('fl3_jobs');
+  return j && j.length ? j : [];
+}
+
+function saveJobs() { LS.set('fl3_jobs', jobs); }
+function loadMessages() { return LS.get('fl3_msgs') || {}; }
+function saveMessages() { LS.set('fl3_msgs', allMsgs); }
+function loadUnread(email) { return new Set(LS.get('fl3_unread_' + email) || []); }
+function saveUnread(email, set) { LS.set('fl3_unread_' + email, [...set]); }
+
+let accounts = loadAccounts();
+let jobs = loadJobs();
+let allMsgs = loadMessages();
+
+const S = {
+  email: null, type: null,
+  photoProfile: null, bizProfile: null,
+  bizJobIds: [],
+  selectedType: null,
+  curConvo: null,
+  unread: new Set(),
+  opStep: 1,
+};
+
+const tkData = { cameras:[], lenses:[], software:[], specialties:[] };
+let njTags = [];
+
+// ═══════════════════════════════
+// BOOT
+// ═══════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // Purge any filler/seed jobs that were cached before this fix.
+  // Real business-posted jobs have a numeric id from Date.now().
+  // Old filler jobs had hardcoded ids 1-4 — remove them.
+  const stored = LS.get('fl3_jobs');
+  if (stored && stored.some(j => j.id <= 4)) {
+    const cleaned = stored.filter(j => j.id > 4);
+    LS.set('fl3_jobs', cleaned);
+    jobs = cleaned;
+  }
+
+  const email = LS.get('fl3_session');
+  if (email && accounts[email]) restoreSession(email);
+  // Sidebar hover expand avatar overlay on onboard
+  ['op-av-ring','ob-av-ring'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('mouseenter', () => { const ov = el.querySelector('[id$="-overlay"]'); if(ov) ov.style.opacity='1'; });
+    el.addEventListener('mouseleave', () => { const ov = el.querySelector('[id$="-overlay"]'); if(ov) ov.style.opacity='0'; });
+  });
+});
+
+window.addEventListener('focus', () => {
+  if (S.email) {
+    jobs = loadJobs();
+    allMsgs = loadMessages();
+    S.unread = loadUnread(S.email);
+    updateBadges();
+  }
+});
+
+function persist() {
+  if (!S.email) return;
+  if (!accounts[S.email]) return;
+  const a = accounts[S.email];
+  if (S.type === 'photographer') {
+    a.photoProfile = S.photoProfile;
+  } else {
+    a.bizProfile = S.bizProfile;
+    a.bizJobIds = S.bizJobIds;
+  }
+  saveAccounts();
+  saveJobs();
+  saveMessages();
+  saveUnread(S.email, S.unread);
+}
+
+// ═══════════════════════════════
+// AUTH ROUTING
+// ═══════════════════════════════
+function goAuth(id) {
+  document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.app-shell').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+function restoreSession(email) {
+  const a = accounts[email];
+  S.email = email; S.type = a.type;
+  S.bizJobIds = a.bizJobIds || [];
+  S.unread = loadUnread(email);
+  if (a.type === 'photographer') {
+    S.photoProfile = { ...a.photoProfile };
+    launchPhotoApp();
+  } else {
+    S.bizProfile = { ...a.bizProfile };
+    launchBizApp();
+  }
+}
+
+function pickType(t) {
+  S.selectedType = t;
+  document.querySelectorAll('.type-tile').forEach(c => c.classList.remove('sel'));
+  document.getElementById('tt-' + t).classList.add('sel');
+}
+
+function doSignup() {
+  const name = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim().toLowerCase();
+  const pass = document.getElementById('su-pass').value;
+  const type = S.selectedType;
+  if (!name || !email) return toast('Please enter your name and email.', 'error');
+  if (pass.length < 6) return toast('Password must be at least 6 characters.', 'error');
+  if (!type) return toast('Please choose an account type.', 'error');
+  if (accounts[email]) return toast('An account with that email already exists.', 'error');
+  accounts[email] = {
+    email, password: pass, type,
+    photoProfile: { name:'',title:'',location:'',website:'',bio:'',avatarUrl:'',bannerUrl:'',resumeName:'', experience:[], cameras:[], lenses:[], software:[], specialties:[], portfolio:[] },
+    bizProfile: { name:'',industry:'',location:'',website:'',size:'',bio:'',avatarUrl:'',bannerUrl:'' },
+    bizJobIds: []
+  };
+  if (type === 'photographer') accounts[email].photoProfile.name = name;
+  else accounts[email].bizProfile.name = name;
+  saveAccounts();
+  LS.set('fl3_session', email);
+  S.email = email; S.type = type; S.unread = new Set();
+  if (type === 'photographer') {
+    S.photoProfile = { ...accounts[email].photoProfile };
+    document.getElementById('op-name').value = name;
+    goAuth('sc-onboard-photo');
+  } else {
+    S.bizProfile = { ...accounts[email].bizProfile };
+    document.getElementById('ob-name').value = name;
+    goAuth('sc-onboard-biz');
+  }
+}
+
+function doLogin() {
+  const email = document.getElementById('li-email').value.trim().toLowerCase();
+  const pass = document.getElementById('li-pass').value;
+  if (!email || !pass) return toast('Please enter email and password.', 'error');
+  const a = accounts[email];
+  if (!a) return toast('No account found with that email.', 'error');
+  if (a.password !== pass) return toast('Incorrect password.', 'error');
+  LS.set('fl3_session', email);
+  restoreSession(email);
+  toast('Welcome back! 👋');
+}
+
+function demoLogin(type) {
+  S.email = 'demo@' + type + '.fl'; S.type = type; S.unread = new Set();
+  if (type === 'photographer') {
+    S.photoProfile = {
+      name:'Alex Rivera', title:'Wedding & Lifestyle Photographer',
+      location:'Austin, TX', website:'alexrivera.photo',
+      bio:'Seven years capturing love stories and authentic moments. My style blends editorial storytelling with warm, candid emotion. Available for weddings, elopements, and brand lifestyle shoots.',
+      avatarUrl:'', bannerUrl:'', resumeName:'alex_rivera_cv.pdf',
+      experience:[
+        { role:'Lead Photographer', company:'Sunlight Studios', dates:'2021–Present' },
+        { role:'Photography Associate', company:'Vivid Moments Co.', dates:'2019–2021' },
+      ],
+      cameras:['Sony A7 IV','Canon R6 Mark II'],
+      lenses:['85mm f/1.4','35mm f/1.8','24-70mm f/2.8'],
+      software:['Lightroom','Capture One','Photoshop'],
+      specialties:['Wedding','Portrait','Lifestyle','Elopement'],
+      portfolio:[]
+    };
+    launchPhotoApp();
+  } else {
+    S.bizJobIds = [];
+    S.bizProfile = {
+      name:'Bloom Creative Studio', industry:'Photography Studio',
+      location:'Austin, TX', website:'https://bloomcreative.io', size:'11–50 employees',
+      bio:'Bloom is a full-service creative studio specializing in brand photography, event coverage, and editorial work. We collaborate with photographers who share our passion for visual storytelling.',
+      avatarUrl:'', bannerUrl:''
+    };
+    launchBizApp();
+  }
+}
+
+function logout() {
+  persist();
+  LS.del('fl3_session');
+  S.email = null; S.type = null; S.photoProfile = null; S.bizProfile = null;
+  S.bizJobIds = []; S.curConvo = null; S.unread = new Set();
+  jobs = loadJobs(); allMsgs = loadMessages();
+  document.querySelectorAll('.app-shell,.auth-screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('sc-landing').classList.add('active');
+  toast('Signed out successfully.');
+}
+
+// ═══════════════════════════════
+// ONBOARDING — PHOTOGRAPHER
+// ═══════════════════════════════
+function opStep(n) {
+  S.opStep = n;
+  [1,2,3].forEach(i => {
+    document.getElementById('op-step' + i).style.display = i === n ? 'block' : 'none';
+    document.getElementById('op' + i).className = 'ps' + (i <= n ? ' done' : '');
+  });
+  const notes = ['', 'Basic Info', 'Experience & Resume', 'Equipment & Skills'];
+  document.getElementById('op-note').textContent = `Step ${n} of 3 — ${notes[n]}`;
+}
+
+function handleAvUpload(prefix, input) {
+  const file = input.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const url = e.target.result;
+    const icon = document.getElementById(prefix + '-av-icon');
+    const img = document.getElementById(prefix + '-av-img');
+    if (icon) icon.style.display = 'none';
+    img.src = url; img.style.display = 'block';
+    if (prefix === 'op') S.photoProfile.avatarUrl = url;
+    else if (prefix === 'ob') S.bizProfile.avatarUrl = url;
+  };
+  r.readAsDataURL(file);
+}
+
+function addOpExp() {
+  const id = 'opx' + Date.now();
+  const d = document.createElement('div');
+  d.id = id;
+  d.style.cssText = 'background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px;margin-bottom:10px;position:relative';
+  d.innerHTML = `<button onclick="document.getElementById('${id}').remove()" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--t3);cursor:pointer;font-size:1rem">✕</button>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="field" style="margin:0"><label>Job Title</label><input type="text" class="opx-role" placeholder="Lead Photographer"></div>
+      <div class="field" style="margin:0"><label>Company</label><input type="text" class="opx-co" placeholder="Studio Name"></div>
+    </div>
+    <div class="field" style="margin-top:10px;margin-bottom:0"><label>Dates</label><input type="text" class="opx-dates" placeholder="2021–Present"></div>`;
+  document.getElementById('op-exp-list').appendChild(d);
+}
+
+const tkMap = { cameras:'ti-cam', lenses:'ti-lens', software:'ti-sw', specialties:'ti-spec' };
+function tkAdd(type, event) {
+  if (event && event.key !== 'Enter') return;
+  const inp = document.getElementById(tkMap[type]);
+  const v = inp.value.trim(); if (!v || tkData[type].includes(v)) { inp.value = ''; return; }
+  tkData[type].push(v); inp.value = '';
+  renderTkWrap(type);
+}
+function tkRemove(type, v) { tkData[type] = tkData[type].filter(t => t !== v); renderTkWrap(type); }
+function renderTkWrap(type) {
+  const w = document.getElementById('tw-' + type); if (!w) return;
+  w.innerHTML = tkData[type].map(t => `<span class="tag">${esc(t)}<span class="tag-x" onclick="tkRemove('${type}','${esc(t)}')">✕</span></span>`).join('');
+}
+
+function finishPhotoOnboard() {
+  const p = S.photoProfile;
+  p.name = document.getElementById('op-name').value.trim() || p.name;
+  p.title = document.getElementById('op-title').value.trim();
+  p.location = document.getElementById('op-loc').value.trim();
+  p.website = document.getElementById('op-web').value.trim();
+  p.bio = document.getElementById('op-bio').value.trim();
+  p.cameras = [...tkData.cameras]; p.lenses = [...tkData.lenses];
+  p.software = [...tkData.software]; p.specialties = [...tkData.specialties];
+  p.experience = [];
+  document.querySelectorAll('#op-exp-list > div').forEach(el => {
+    const role = el.querySelector('.opx-role')?.value;
+    const co = el.querySelector('.opx-co')?.value;
+    const dates = el.querySelector('.opx-dates')?.value;
+    if (role) p.experience.push({ role, company: co, dates });
+  });
+  if (!p.portfolio) p.portfolio = [];
+  if (S.email && accounts[S.email]) accounts[S.email].photoProfile = p;
+  persist();
+  launchPhotoApp();
+  toast('Profile created! Start exploring jobs. 🎉');
+}
+
+function finishBizOnboard() {
+  const p = S.bizProfile;
+  p.name = document.getElementById('ob-name').value.trim() || p.name;
+  p.industry = document.getElementById('ob-ind').value;
+  p.location = document.getElementById('ob-loc').value.trim();
+  p.website = document.getElementById('ob-web').value.trim();
+  p.size = document.getElementById('ob-size').value;
+  p.bio = document.getElementById('ob-bio').value.trim();
+  if (!p.portfolio) p.portfolio = [];
+  if (S.email && accounts[S.email]) accounts[S.email].bizProfile = p;
+  persist();
+  launchBizApp();
+  toast('Company profile ready! 🚀');
+}
+
+// ═══════════════════════════════
+// LAUNCH APPS
+// ═══════════════════════════════
+function launchPhotoApp() {
+  document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('app-photo').classList.add('active');
+  updatePhotoNav();
+  pNav('jobs');
+}
+
+function launchBizApp() {
+  document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('app-biz').classList.add('active');
+  updateBizNav();
+  bNav('listings');
+}
+
+function avHTML(url, name) {
+  if (url) return `<img src="${url}" style="width:100%;height:100%;object-fit:cover">`;
+  return esc((name || '?')[0].toUpperCase());
+}
+
+function updatePhotoNav() {
+  const p = S.photoProfile; if (!p) return;
+  ['p-topav','p-sidebar-av'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = avHTML(p.avatarUrl, p.name);
+  });
+  const sn = document.getElementById('p-sidebar-name'); if(sn) sn.textContent = p.name || 'Photographer';
+  const sl = document.getElementById('p-sidebar-loc'); if(sl) sl.textContent = p.location || '';
+}
+
+function updateBizNav() {
+  const p = S.bizProfile; if (!p) return;
+  ['b-topav','b-sidebar-av'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = avHTML(p.avatarUrl, p.name);
+  });
+  const sn = document.getElementById('b-sidebar-name'); if(sn) sn.textContent = p.name || 'Business';
+  const sl = document.getElementById('b-sidebar-loc'); if(sl) sl.textContent = p.location || '';
+}
+
+// ═══════════════════════════════
+// PHOTOGRAPHER NAVIGATION
+// ═══════════════════════════════
+const pPages = ['jobs','applications','messages','profile','edit'];
+function pNav(view) {
+  pPages.forEach(v => {
+    document.getElementById('p-page-' + v).classList.toggle('active', v === view);
+    const ni = document.getElementById('pni-' + v);
+    if (ni) ni.classList.toggle('active', v === view);
+  });
+  if (view === 'jobs') renderJobs();
+  else if (view === 'applications') renderMyApps();
+  else if (view === 'messages') renderMessages('photographer');
+  else if (view === 'profile') renderPhotoProfile();
+  else if (view === 'edit') renderPhotoEdit();
+}
+
+function onTopSearch(val) {
+  if (S.type === 'photographer') { pNav('jobs'); }
+}
+
+// ═══════════════════════════════
+// PHOTOGRAPHER — JOB BOARD
+// ═══════════════════════════════
+
+// ═══════════════════════════════════════
+// FILTER STATE — persists across renders
+// ═══════════════════════════════════════
+const filterState = {
+  types: new Set(['Freelance','Contract','Part-time','Full-time']),
+  sources: new Set(['framelink','external']),
+};
+
+function toggleFilter(group, value) {
+  if (filterState[group].has(value)) filterState[group].delete(value);
+  else filterState[group].add(value);
+  renderJobs();
+}
+
+// ═══════════════════════════════════════
+// DAILY REFRESH LOGIC
+// The curated listings rotate daily using
+// a date-seeded index so everyone on the
+// same day sees the same set, and it
+// changes automatically each new day.
+// When you add a real crawler API, replace
+// getCuratedListings() with a fetch() call.
+// ═══════════════════════════════════════
+const ALL_CURATED = [
+  { id:'ext-1', title:'Photographer / Videographer', company:'Brides of America', location:'Miami, FL', type:'Contract', pay:'$700–1,400/event', tags:['Wedding','Videography','Editorial'], desc:'Looking for a talented photographer and videographer to join a fast-growing bridal brand. Shoot editorial campaigns, runway events, and real weddings across South Florida. Ideal candidate has a cinematic, fashion-forward eye.', source:'Indeed', sourceColor:'#2557a7', url:'https://www.indeed.com/jobs?q=photographer&l=miami' },
+  { id:'ext-2', title:'Commercial Product Photographer', company:'E-Commerce Brands (Remote)', location:'Remote', type:'Freelance', pay:'Project-based', tags:['Product','Commercial','Studio'], desc:'E-commerce brands consistently hire freelance product photographers on Upwork. Search current briefs for apparel, electronics, beauty, and food categories. Top earners set their own rates.', source:'Upwork', sourceColor:'#14a800', url:'https://www.upwork.com/search/jobs/?q=photographer&sort=recency' },
+  { id:'ext-3', title:'Event & Corporate Photographer', company:'Various Clients', location:'Major US Cities', type:'Freelance', pay:'$50–150/hr', tags:['Event','Corporate','Headshots'], desc:'Thousands of event photography gigs are posted weekly on GigSalad — conferences, galas, headshot days, and corporate parties nationwide. Build a recurring client base through the platform.', source:'GigSalad', sourceColor:'#e85d04', url:'https://www.gigsalad.com/photography/photographer' },
+  { id:'ext-4', title:'Real Estate Photographer', company:'Agencies & Independent Agents', location:'Nationwide', type:'Contract', pay:'$100–350/property', tags:['Real Estate','Drone','Architectural'], desc:'Real estate photography demand is high year-round. Agents post on Thumbtack looking for fast turnaround, wide-angle interior shots, and drone footage for luxury listings.', source:'Thumbtack', sourceColor:'#00a6a6', url:'https://www.thumbtack.com/k/photography/near-me/' },
+  { id:'ext-5', title:'Portrait & Family Photographer', company:'Photography Studios', location:'Multiple Locations', type:'Part-time', pay:'$20–45/hr + commission', tags:['Portrait','Family','Studio'], desc:'National portrait studios regularly hire part-time and full-time studio photographers. Browse LinkedIn filtered to "Photographer" for studio positions near you — many offer benefits for part-time staff.', source:'LinkedIn', sourceColor:'#0a66c2', url:'https://www.linkedin.com/jobs/search/?keywords=photographer&f_TP=1' },
+  { id:'ext-6', title:'Photojournalist / Staff Photographer', company:'News & Media Outlets', location:'Various', type:'Full-time', pay:'$38,000–65,000/yr', tags:['Photojournalism','Editorial','News'], desc:'Newspapers, magazines, and digital media post staff photographer openings on JournalismJobs.com. Roles range from local news to national wire services with full benefits packages.', source:'JournalismJobs', sourceColor:'#b91c1c', url:'https://www.journalismjobs.com/search?s=photographer' },
+  { id:'ext-7', title:'Fashion & Apparel Photographer', company:'Fashion Brands', location:'New York / LA / Remote', type:'Freelance', pay:'$400–1,200/day', tags:['Fashion','Editorial','Lookbook'], desc:'Fashion brands post photographer briefs on Creative Circle continuously. Lookbooks, campaigns, and e-commerce shoots for brands of all sizes — from DTC startups to established labels.', source:'Creative Circle', sourceColor:'#7c3aed', url:'https://www.creativecircle.com/find-work/?query=photographer' },
+  { id:'ext-8', title:'Sports & Action Photographer', company:'Sports Teams & Media', location:'Nationwide', type:'Freelance', pay:'$200–600/event', tags:['Sports','Action','Editorial'], desc:'Professional sports teams, college athletics, and sports media post photographer openings on TeamWork Online. Seasons vary by sport — build your schedule across multiple leagues.', source:'TeamWork Online', sourceColor:'#0369a1', url:'https://www.teamworkonline.com/multiple-opening-jobs/multiple-opening-jobs/photography' },
+  { id:'ext-9', title:'Food & Beverage Photographer', company:'Restaurants & Brands', location:'Remote / On-site', type:'Freelance', pay:'$300–900/shoot', tags:['Food','Beverage','Commercial'], desc:'Restaurants, CPG brands, and meal kit companies frequently seek food photographers. Browse Bark.com and local Facebook groups for consistent shoot-day work. High repeat-client potential.', source:'Bark.com', sourceColor:'#f59e0b', url:'https://www.bark.com/en/us/photographers/food-photographers/' },
+  { id:'ext-10', title:'Travel & Destination Photographer', company:'Tourism Boards / Agencies', location:'Remote + Travel', type:'Contract', pay:'$500–2,000/project', tags:['Travel','Landscape','Editorial'], desc:'Tourism boards, travel magazines, and hospitality brands commission travel photographers for campaigns and stock libraries. Getty Images and Shutterstock contributor programs are a parallel income stream.', source:'Getty/Shutterstock', sourceColor:'#cc0000', url:'https://www.gettyimages.com/workwithus/contributors' },
+  { id:'ext-11', title:'School & Event Photographer', company:'Lifetouch / School Specialty', location:'Nationwide', type:'Part-time', pay:'$18–28/hr', tags:['School','Portrait','Event'], desc:'School photography companies hire seasonal and part-time photographers for picture days, sports, and graduations nationwide. Great entry point for studio workflow experience.', source:'Indeed', sourceColor:'#2557a7', url:'https://www.indeed.com/jobs?q=school+photographer' },
+  { id:'ext-12', title:'Aerial / Drone Photographer', company:'Construction & Real Estate Firms', location:'Various', type:'Freelance', pay:'$200–800/flight', tags:['Drone','Aerial','Real Estate'], desc:'FAA Part 107 certified drone pilots are in high demand for construction progress docs, real estate, and event overviews. DroneBase and AirVuz connect certified pilots to clients nationwide.', source:'DroneBase', sourceColor:'#1d4ed8', url:'https://www.dronebase.com/pilots' },
+];
+
+function getCuratedListings() {
+  // Use today's date as a seed to pick 6 listings.
+  // This rotates the selection every day automatically.
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+  // Simple seeded shuffle
+  const arr = [...ALL_CURATED];
+  let s = seed;
+  for (let i = arr.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    const j = Math.abs(s) % (i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, 6);
+}
+
+function getLastRefreshLabel() {
+  const d = new Date();
+  return d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+}
+
+function getNextRefreshLabel() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  d.setHours(0,0,0,0);
+  const hrs = Math.ceil((d - new Date()) / 3600000);
+  return `${hrs}h`;
+}
+
+function renderJobs(search) {
+  search = search || document.getElementById('topbar-search-p')?.value?.toLowerCase() || '';
+
+  // Active filter state (persisted in module scope)
+  const activeTypes = renderJobs._types || new Set(['Freelance','Contract','Part-time','Full-time']);
+  const showFL     = renderJobs._showFL !== false;
+  const showExt    = renderJobs._showExt !== false;
+  renderJobs._types = activeTypes;
+  renderJobs._showFL = showFL;
+  renderJobs._showExt = showExt;
+
+  // ── FrameLink posted jobs ──
+  const flJobs = !showFL ? [] : jobs.filter(j => {
+    const matchSearch = !search || j.title.toLowerCase().includes(search) ||
+      j.company.toLowerCase().includes(search) || (j.tags||[]).some(t => t.toLowerCase().includes(search));
+    const matchType = activeTypes.has(j.type);
+    return matchSearch && matchType;
+  });
+
+  // ── Curated external listings (real photography job sources, updated manually) ──
+  // To refresh: update LAST_CRAWL date and edit the entries below.
+  // When a backend is added, replace this array with a fetch() call.
+  const LAST_CRAWL_DATE = new Date('2025-03-23');
+  const LAST_CRAWL = 'Mar 23, 2025';
+  const NEXT_CRAWL = new Date(LAST_CRAWL_DATE);
+  NEXT_CRAWL.setDate(NEXT_CRAWL.getDate() + 1);
+  const now = new Date();
+  const hoursUntilRefresh = Math.max(0, Math.round((NEXT_CRAWL - now) / 36e5));
+
+  const externalListings = [
+    { id:'ext-1', title:'Photographer / Videographer', company:'Brides of America', location:'Miami, FL', type:'Full-time', pay:'Competitive', tags:['Wedding','Videography','Editorial'], desc:'Talented photographer & videographer needed for a fast-growing bridal brand. Shoot editorial campaigns, runway events, and real weddings across South Florida.', source:'Indeed', sourceColor:'#2557a7', url:'https://www.indeed.com/jobs?q=photographer&l=miami', posted:'Curated' },
+    { id:'ext-2', title:'Commercial Product Photographer', company:'E-Commerce Brands', location:'Remote', type:'Freelance', pay:'Project-based', tags:['Product','Commercial','Studio'], desc:'E-commerce brands consistently hire freelance product photographers on Upwork. Browse current active contracts across apparel, electronics, and food categories.', source:'Upwork', sourceColor:'#14a800', url:'https://www.upwork.com/search/jobs/?q=photographer&sort=recency', posted:'Curated' },
+    { id:'ext-3', title:'Event & Corporate Photographer', company:'Various Clients', location:'Major US Cities', type:'Freelance', pay:'$50–150/hr', tags:['Event','Corporate','Headshots'], desc:'Thousands of event photography gigs posted weekly — conferences, galas, headshot days, and corporate parties looking for dependable photographers nationwide.', source:'GigSalad', sourceColor:'#e85d04', url:'https://www.gigsalad.com/photography/photographer', posted:'Curated' },
+    { id:'ext-4', title:'Real Estate Photographer', company:'Agencies & Agents', location:'Nationwide', type:'Contract', pay:'$100–350/property', tags:['Real Estate','Drone','Architectural'], desc:'Real estate photography demand is surging. Agents post consistently on Thumbtack looking for residential and commercial photographers with fast turnaround.', source:'Thumbtack', sourceColor:'#00a6a6', url:'https://www.thumbtack.com/k/photography/near-me/', posted:'Curated' },
+    { id:'ext-5', title:'Portrait & Family Photographer', company:'National Portrait Studios', location:'Multiple Locations', type:'Part-time', pay:'$20–45/hr + commission', tags:['Portrait','Family','Studio'], desc:'National portrait studios regularly hire part-time and full-time studio photographers. Browse current openings filtered to Photographer roles near you.', source:'LinkedIn', sourceColor:'#0a66c2', url:'https://www.linkedin.com/jobs/search/?keywords=photographer&f_TP=1', posted:'Curated' },
+    { id:'ext-6', title:'Photojournalist / Staff Photographer', company:'News & Media Outlets', location:'Various', type:'Full-time', pay:'$38K–65K/yr', tags:['Photojournalism','Editorial','News'], desc:'Newspapers, magazines, and digital media organizations regularly post staff photographer openings. Roles range from local news to national wire services.', source:'JournalismJobs', sourceColor:'#b91c1c', url:'https://www.journalismjobs.com/search?s=photographer', posted:'Curated' },
+    { id:'ext-7', title:'Fashion & Apparel Photographer', company:'Fashion Brands', location:'NY / LA / Remote', type:'Freelance', pay:'$400–1,200/day', tags:['Fashion','Editorial','Lookbook'], desc:'Fashion brands and agencies post photographer briefs continuously. Lookbooks, campaigns, and e-commerce shoots for brands of all sizes.', source:'Creative Circle', sourceColor:'#7c3aed', url:'https://www.creativecircle.com/find-work/?query=photographer', posted:'Curated' },
+    { id:'ext-8', title:'Sports & Action Photographer', company:'Sports Teams & Media', location:'Nationwide', type:'Freelance', pay:'$200–600/event', tags:['Sports','Action','Editorial'], desc:'Professional sports teams, college athletics, and sports media post photographer openings. Seasons vary by sport — check regularly for new openings.', source:'TeamWork Online', sourceColor:'#0369a1', url:'https://www.teamworkonline.com/multiple-opening-jobs/multiple-opening-jobs/photography', posted:'Curated' },
+    { id:'ext-9', title:'Headshot & Personal Branding Photographer', company:'Corporate Clients', location:'Remote / Major Cities', type:'Freelance', pay:'$300–800/session', tags:['Headshots','Branding','Portrait'], desc:'Demand for professional headshots and personal branding photography is booming. Browse photographer gigs on PeoplePerHour for recurring session-based work.', source:'PeoplePerHour', sourceColor:'#f97316', url:'https://www.peopleperhour.com/freelance-photographer-jobs', posted:'Curated' },
+    { id:'ext-10', title:'Wedding & Events Photographer', company:'Couples & Event Planners', location:'Nationwide', type:'Freelance', pay:'$1,000–4,000/event', tags:['Wedding','Events','Portrait'], desc:'The Knot Marketplace connects photographers directly with couples planning their weddings. Create a profile or browse requests from couples in your area.', source:'The Knot', sourceColor:'#c026d3', url:'https://www.theknot.com/marketplace/wedding-photographers', posted:'Curated' },
+  ].filter(e => {
+    if (!showExt) return false;
+    const matchSearch = !search || e.title.toLowerCase().includes(search) ||
+      e.company.toLowerCase().includes(search) || e.tags.some(t => t.toLowerCase().includes(search)) ||
+      e.desc.toLowerCase().includes(search);
+    const matchType = activeTypes.has(e.type);
+    return matchSearch && matchType;
+  });
+
+  const el = document.getElementById('p-page-jobs');
+  const totalCount = flJobs.length + externalListings.length;
+
+  // ── Build FrameLink jobs HTML ──
+  let flHTML = '';
+  if (flJobs.length === 0) {
+    flHTML = `<div class="fl-empty">
+      <div class="fl-empty-icon">🏢</div>
+      <div class="fl-empty-title">No FrameLink listings yet</div>
+      <div class="fl-empty-sub">As businesses sign up and post, they appear here with full in-platform apply functionality.</div>
+    </div>`;
+  } else {
+    flHTML = flJobs.map(j => {
+      const applied = j.applicants.some(a => a.applicantEmail === S.email);
+      return `<div class="job-card clickable" onclick="openJob(${j.id})">
+        <div class="jc-head">
+          <div class="jc-logo">${j.logo || '🏢'}</div>
+          <div style="flex:1;min-width:0">
+            <div class="jc-title">${esc(j.title)}</div>
+            <div class="jc-co">${esc(j.company)}</div>
+            ${applied ? '<div class="jc-applied">✓ Applied</div>' : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.63rem;font-weight:700;background:var(--gold-lt);color:var(--gold2);border:1px solid var(--gold-mid)">✦ FrameLink</span>
+            ${applied ? '' : `<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openJob(${j.id})">Apply</button>`}
+          </div>
+        </div>
+        <div class="jc-meta">
+          <span class="jc-m">📍 ${esc(j.location)}</span>
+          <span class="jc-m">⏱ ${esc(j.type)}</span>
+          <span class="jc-m">💰 ${esc(j.pay)}</span>
+          <span class="jc-m">🕐 ${esc(j.posted)}</span>
+        </div>
+        <div class="jc-desc">${esc((j.desc||'').substring(0,160))}…</div>
+        <div class="jc-footer">
+          <div class="jc-tags">${(j.tags||[]).map(t => `<span class="jc-tag">${esc(t)}</span>`).join('')}</div>
+          <span style="font-size:.66rem;color:var(--t3)">${j.applicants.length} applicant${j.applicants.length===1?'':'s'}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Build external listings HTML ──
+  const extHTML = externalListings.map(e => `
+    <div class="job-card clickable" onclick="window.open('${e.url}','_blank','noopener')">
+      <div class="jc-head">
+        <div class="jc-logo" style="background:${e.sourceColor}18;border:1px solid ${e.sourceColor}40;font-size:.85rem;font-weight:800;color:${e.sourceColor};font-family:'Sora',sans-serif">${e.source[0]}</div>
+        <div style="flex:1;min-width:0">
+          <div class="jc-title">${esc(e.title)}</div>
+          <div class="jc-co">${esc(e.company)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+          <span class="source-badge" style="background:${e.sourceColor}18;color:${e.sourceColor};border:1px solid ${e.sourceColor}40">${esc(e.source)}</span>
+          <span class="ext-arrow">↗ Opens ${esc(e.source)}</span>
+        </div>
+      </div>
+      <div class="jc-meta">
+        <span class="jc-m">📍 ${esc(e.location)}</span>
+        <span class="jc-m">⏱ ${esc(e.type)}</span>
+        <span class="jc-m">💰 ${esc(e.pay)}</span>
+      </div>
+      <div class="jc-desc">${esc(e.desc.substring(0,200))}…</div>
+      <div class="jc-footer">
+        <div class="jc-tags">${e.tags.map(t => `<span class="jc-tag">${esc(t)}</span>`).join('')}</div>
+        <span style="font-size:.66rem;color:var(--t3);font-style:italic">View full listing on ${esc(e.source)} →</span>
+      </div>
+    </div>`).join('');
+
+  // ── Filter sidebar HTML ──
+  const types = ['Freelance','Contract','Part-time','Full-time'];
+  // Count listings per type (combine fl + ext for count display)
+  const allForCount = [...jobs, ...externalListings];
+  const filterHTML = `
+    <div class="filter-card">
+      <div class="filter-title">Job Type</div>
+      ${types.map(t => `
+        <label class="filter-check">
+          <input type="checkbox" class="type-filter-cb" data-type="${t}" ${activeTypes.has(t)?'checked':''}>
+          ${t}
+          <span class="filter-count">${allForCount.filter(j=>j.type===t).length}</span>
+        </label>`).join('')}
+    </div>
+    <div class="filter-card">
+      <div class="filter-title">Source</div>
+      <label class="filter-check">
+        <input type="checkbox" class="source-filter-cb" data-src="fl" ${showFL?'checked':''}>
+        ✦ FrameLink
+      </label>
+      <label class="filter-check">
+        <input type="checkbox" class="source-filter-cb" data-src="ext" ${showExt?'checked':''}>
+        🌐 Curated Web
+      </label>
+    </div>
+    <div class="strength-card">
+      <div class="strength-label">📷 Profile Strength</div>
+      <div class="strength-sub">Complete your profile to attract businesses posting on FrameLink.</div>
+      <div class="strength-bar"><div class="strength-fill" style="width:${getProfileStrength()}%"></div></div>
+      <div class="strength-pct">${getProfileStrength()}% complete</div>
+      ${getProfileStrength() < 100 ? '<button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%;justify-content:center;font-size:.7rem" onclick="pNav(\'edit\')">Complete Profile →</button>' : ''}
+    </div>
+    <div class="filter-card">
+      <div class="filter-title">Curated Sources</div>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-top:2px">
+        ${[
+          {name:'Indeed',color:'#2557a7',url:'https://www.indeed.com/jobs?q=photographer'},
+          {name:'LinkedIn',color:'#0a66c2',url:'https://www.linkedin.com/jobs/search/?keywords=photographer'},
+          {name:'Upwork',color:'#14a800',url:'https://www.upwork.com/search/jobs/?q=photographer'},
+          {name:'GigSalad',color:'#e85d04',url:'https://www.gigsalad.com/photography/photographer'},
+          {name:'Thumbtack',color:'#00a6a6',url:'https://www.thumbtack.com/k/photography/near-me/'},
+          {name:'Creative Circle',color:'#7c3aed',url:'https://www.creativecircle.com/find-work/?query=photographer'},
+          {name:'The Knot',color:'#c026d3',url:'https://www.theknot.com/marketplace/wedding-photographers'},
+          {name:'PeoplePerHour',color:'#f97316',url:'https://www.peopleperhour.com/freelance-photographer-jobs'},
+        ].map(s => `<a href="${s.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:7px;text-decoration:none;padding:5px 6px;border-radius:var(--r);transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='transparent'">
+          <span style="width:19px;height:19px;border-radius:4px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800;color:#fff;flex-shrink:0">${s.name[0]}</span>
+          <span style="font-size:.73rem;font-weight:500;color:var(--t2)">${s.name}</span>
+          <span style="margin-left:auto;font-size:.62rem;color:var(--t4)">↗</span>
+        </a>`).join('')}
+      </div>
+    </div>`;
+
+  el.innerHTML = `
+    <div class="title-row">
+      <div>
+        <div class="page-title">Browse Jobs</div>
+        <div class="page-sub">${totalCount} photography opportunit${totalCount===1?'y':'ies'} · Curated sources refresh daily</div>
+      </div>
+    </div>
+    <div class="search-row">
+      <div class="search-box">
+        <span class="search-box-icon">🔍</span>
+        <input placeholder="Search jobs, companies, specialties…" value="${esc(search)}" oninput="renderJobs(this.value.toLowerCase())">
+      </div>
+    </div>
+    <div class="job-board-layout">
+      <div class="job-feed">
+        ${flJobs.length > 0 ? `
+          <div class="feed-section-head">
+            <span>Posted on FrameLink</span><div></div>
+            <span class="feed-section-count">${flJobs.length} listing${flJobs.length===1?'':'s'}</span>
+          </div>` : ''}
+        ${showFL ? flHTML : ''}
+
+        <div class="feed-section-head">
+          <span>Curated from the web</span><div></div>
+          <span class="feed-section-count">Updated ${LAST_CRAWL} · ${hoursUntilRefresh > 0 ? 'refreshes in ~' + hoursUntilRefresh + 'h' : 'refresh due'}</span>
+        </div>
+        <div class="crawl-notice">
+          <span class="crawl-notice-icon">ℹ️</span>
+          <div>
+            <div class="crawl-notice-title">External Listings — Opens source site in new tab</div>
+            <div class="crawl-notice-body">These listings are curated from photography job boards and refreshed daily. FrameLink is not affiliated with these postings — verify details directly with the employer before applying.</div>
+          </div>
+        </div>
+        ${showExt ? (externalListings.length === 0 && search ? `<div class="empty-state"><div class="empty-icon">🔍</div><p>No curated listings match your search or filters</p></div>` : extHTML) : ''}
+      </div>
+      <div class="job-sidebar-panel">${filterHTML}</div>
+    </div>`;
+
+  // Wire up filter checkboxes via addEventListener (not inline onclick — avoids string escaping bugs)
+  el.querySelectorAll('.type-filter-cb').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      if (!renderJobs._types) renderJobs._types = new Set(['Freelance','Contract','Part-time','Full-time']);
+      if (this.checked) renderJobs._types.add(this.dataset.type);
+      else renderJobs._types.delete(this.dataset.type);
+      renderJobs(document.getElementById('topbar-search-p')?.value?.toLowerCase() || '');
+    });
+  });
+  el.querySelectorAll('.source-filter-cb').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      if (this.dataset.src === 'fl') renderJobs._showFL = this.checked;
+      if (this.dataset.src === 'ext') renderJobs._showExt = this.checked;
+      renderJobs(document.getElementById('topbar-search-p')?.value?.toLowerCase() || '');
+    });
+  });
+
+  // Schedule auto-refresh check every hour
+  clearTimeout(renderJobs._refreshTimer);
+  renderJobs._refreshTimer = setTimeout(() => renderJobs(search), 36e5);
+}
+
+// Filter toggle helpers — called from inline filter checkboxes
+function toggleTypeFilter(type, checked) {
+  if (!renderJobs._types) renderJobs._types = new Set(['Freelance','Contract','Part-time','Full-time']);
+  if (checked) renderJobs._types.add(type);
+  else renderJobs._types.delete(type);
+  renderJobs(document.getElementById('topbar-search-p')?.value?.toLowerCase() || '');
+}
+function toggleSourceFilter(src, checked) {
+  if (src === 'fl') renderJobs._showFL = checked;
+  if (src === 'ext') renderJobs._showExt = checked;
+  renderJobs(document.getElementById('topbar-search-p')?.value?.toLowerCase() || '');
+}
+
+
+function getProfileStrength() {
+  const p = S.photoProfile; if (!p) return 0;
+  let score = 0;
+  if (p.name) score += 20;
+  if (p.bio) score += 20;
+  if (p.avatarUrl) score += 15;
+  if ((p.experience||[]).length) score += 15;
+  if ((p.portfolio||[]).length) score += 20;
+  if ((p.specialties||[]).length) score += 10;
+  return Math.min(score, 100);
+}
+
+function openJob(id) {
+  const j = jobs.find(x => x.id === id); if (!j) return;
+  const applied = j.applicants.some(a => a.applicantEmail === S.email);
+  document.getElementById('job-modal-inner').innerHTML = `
+    <div class="modal-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:2rem">${j.logo}</span>
+          <div><h2>${esc(j.title)}</h2><div style="color:var(--blue);font-size:.8rem;font-weight:500;margin-top:2px">${esc(j.company)}</div></div>
+        </div>
+      </div>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:14px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);margin-bottom:14px">
+        <span style="font-size:.75rem;color:var(--t2);display:flex;align-items:center;gap:4px">📍 ${esc(j.location)}</span>
+        <span style="font-size:.75rem;color:var(--t2)">⏱ ${esc(j.type)}</span>
+        <span style="font-size:.75rem;color:var(--t2)">💰 ${esc(j.pay)}</span>
+        <span style="font-size:.75rem;color:var(--t2)">🕐 ${esc(j.posted)}</span>
+      </div>
+      <p style="font-size:.875rem;color:var(--t2);line-height:1.7;margin-bottom:14px">${esc(j.desc)}</p>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px">${j.tags.map(t=>`<span class="jc-tag">${esc(t)}</span>`).join('')}</div>
+      ${applied
+        ? `<div style="padding:12px;background:var(--green-lt);border:1px solid #bbf7d0;border-radius:var(--r);color:var(--green);font-size:.8125rem;font-weight:600;text-align:center">✓ You've already applied to this position</div>`
+        : `<div class="field"><label>Cover Message</label><textarea id="cover-msg" rows="5" placeholder="Introduce yourself — mention your style, experience, and why you're excited about this role…"></textarea></div>
+           <button class="btn btn-primary btn-full" onclick="applyJob(${id})">Submit Application →</button>`
+      }
+    </div>`;
+  document.getElementById('job-overlay').style.display = 'flex';
+}
+
+function applyJob(id) {
+  const msg = document.getElementById('cover-msg')?.value.trim();
+  if (!msg) return toast('Please write a cover message.', 'error');
+  const j = jobs.find(x => x.id === id); if (!j) return;
+  const p = S.photoProfile || {};
+  j.applicants.push({
+    applicantEmail: S.email, name: p.name || 'Photographer',
+    title: p.title || '', coverLetter: msg,
+    date: new Date().toLocaleDateString(),
+    avatarUrl: p.avatarUrl || '', specialties: p.specialties || []
+  });
+  saveJobs();
+  closeModal();
+  toast('Application submitted! 🎉');
+  renderJobs();
+}
+
+function closeModal() { document.getElementById('job-overlay').style.display = 'none'; }
+
+// ═══════════════════════════════
+// PHOTOGRAPHER — APPLICATIONS
+// ═══════════════════════════════
+function renderMyApps() {
+  const el = document.getElementById('p-page-applications');
+  const myApps = jobs.filter(j => j.applicants.some(a => a.applicantEmail === S.email));
+  el.innerHTML = `
+    <div class="page-title">My Applications</div>
+    <div class="page-sub">Track the status of your job applications</div>
+    ${myApps.length === 0
+      ? `<div class="empty-state"><div class="empty-icon">📋</div><p>No applications yet. Start browsing jobs!</p><button class="btn btn-primary" onclick="pNav('jobs')">Browse Jobs →</button></div>`
+      : myApps.map((j, i) => {
+          const key = mkKey(S.email, j.bizEmail, j.id);
+          const msgs = allMsgs[key] || [];
+          const unread = S.unread.has(key);
+          return `<div class="card card-body" style="margin-bottom:10px">
+            <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+              <span style="font-size:1.8rem">${j.logo}</span>
+              <div style="flex:1;min-width:160px">
+                <div style="font-weight:700;font-size:.9375rem">${esc(j.title)}</div>
+                <div style="color:var(--blue);font-size:.8rem;font-weight:500;margin-top:1px">${esc(j.company)}</div>
+                <div style="color:var(--t3);font-size:.73rem;margin-top:2px">📍 ${esc(j.location)} · ${esc(j.type)} · ${esc(j.pay)}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                ${unread ? '<span class="pill pill-red">● New Message</span>' : msgs.length ? '<span class="pill pill-blue">💬 In conversation</span>' : '<span class="pill pill-gray">⏳ Pending review</span>'}
+              </div>
+            </div>
+            ${msgs.length ? `<button class="btn btn-outline btn-sm app-open-msg" data-idx="${i}" style="margin-top:12px">Open Conversation →</button>` : ''}
+          </div>`;
+        }).join('')
+    }`;
+  el.querySelectorAll('.app-open-msg').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const j = myApps[parseInt(btn.dataset.idx)];
+      S.curConvo = mkKey(S.email, j.bizEmail, j.id);
+      pNav('messages');
+    });
+  });
+}
+
+// ═══════════════════════════════
+// PHOTOGRAPHER — PROFILE VIEW
+// ═══════════════════════════════
+function renderPhotoProfile() {
+  const p = S.photoProfile; if (!p) return;
+  const el = document.getElementById('p-page-profile');
+  const init = (p.name || 'P')[0].toUpperCase();
+  el.innerHTML = `
+    <div class="profile-page">
+      <div class="profile-banner-wrap">
+        <div class="profile-banner-img" id="profile-banner-el" style="${p.bannerUrl ? 'background-image:url(' + p.bannerUrl + ');background-size:cover;background-position:center' : ''}">
+          <button class="banner-edit-btn" onclick="triggerBannerUpload()">🖼 Change Cover Photo</button>
+        </div>
+        <div class="profile-meta-strip">
+          <div class="profile-av-row">
+            <div class="profile-av-wrap">
+              <div class="profile-av" onclick="triggerAvatarUpload()">
+                ${p.avatarUrl ? `<img src="${p.avatarUrl}">` : init}
+                <div class="profile-av-overlay"><span>📷</span>Change Photo</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;padding-top:10px">
+              <button class="btn btn-outline btn-sm" onclick="pNav('edit')">✏️ Edit Profile</button>
+            </div>
+          </div>
+          <div class="profile-name" style="margin-top:8px">${esc(p.name || 'Your Name')}</div>
+          <div class="profile-headline">${esc(p.title || 'Professional Photographer')}</div>
+          <div class="profile-loc-row">
+            ${p.location ? `<span>📍 ${esc(p.location)}</span>` : ''}
+            ${p.website ? `<a href="#" onclick="return false">🔗 ${esc(p.website)}</a>` : ''}
+            ${p.resumeName ? `<span>📎 ${esc(p.resumeName)}</span>` : ''}
+          </div>
+          <div class="profile-stats-row">
+            <div class="pstat"><div class="pstat-n">${jobs.filter(j=>j.applicants.some(a=>a.applicantEmail===S.email)).length}</div><div class="pstat-l">Applications</div></div>
+            <div class="pstat"><div class="pstat-n">${(p.portfolio||[]).length}</div><div class="pstat-l">Portfolio Photos</div></div>
+            <div class="pstat"><div class="pstat-n">${getProfileStrength()}%</div><div class="pstat-l">Profile Strength</div></div>
+          </div>
+        </div>
+      </div>
+
+      ${p.bio ? `<div class="section-block"><h3>About<span class="edit-link" onclick="pNav('edit')">Edit</span></h3><p style="font-size:.875rem;color:var(--t2);line-height:1.7">${esc(p.bio)}</p></div>` : ''}
+
+      <div class="section-block">
+        <h3>Portfolio<span class="edit-link" onclick="pNav('edit')">Add Photos</span></h3>
+        ${(p.portfolio || []).length === 0
+          ? `<div style="text-align:center;padding:24px;color:var(--t3)"><div style="font-size:2rem;opacity:.2;margin-bottom:8px">🖼️</div><p style="font-size:.8rem;margin-bottom:10px">Showcase your best work</p><button class="btn btn-outline btn-sm" onclick="pNav('edit')">Upload Photos</button></div>`
+          : `<div class="portfolio-grid">
+              ${p.portfolio.map((img, i) => `
+                <div class="portfolio-thumb">
+                  <img src="${img}" alt="Portfolio photo">
+                </div>`).join('')}
+             </div>`
+        }
+      </div>
+
+      ${(p.specialties||[]).length > 0 ? `
+        <div class="section-block">
+          <h3>Specialties</h3>
+          <div class="tags-row">${p.specialties.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+        </div>` : ''}
+
+      ${(p.experience||[]).length > 0 ? `
+        <div class="section-block">
+          <h3>Experience</h3>
+          ${p.experience.map(e=>`
+            <div class="exp-entry">
+              <div class="exp-icon">💼</div>
+              <div class="exp-body">
+                <div class="exp-role">${esc(e.role)}</div>
+                <div class="exp-co">${esc(e.company||'')}</div>
+                <div class="exp-dates">${esc(e.dates||'')}</div>
+              </div>
+            </div>`).join('')}
+        </div>` : ''}
+
+      ${(p.cameras||[]).length > 0 ? `
+        <div class="section-block">
+          <h3>Equipment</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div><div style="font-size:.72rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Cameras</div><div class="tags-row">${p.cameras.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div>
+            <div><div style="font-size:.72rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Lenses</div><div class="tags-row">${(p.lenses||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div>
+            <div><div style="font-size:.72rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Software</div><div class="tags-row">${(p.software||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div>
+          </div>
+        </div>` : ''}
+    </div>`;
+  // Wire avatar upload
+  document.getElementById('global-av-input').onchange = function() {
+    if (!this.files[0]) return;
+    const r = new FileReader();
+    r.onload = e => { S.photoProfile.avatarUrl = e.target.result; persist(); renderPhotoProfile(); updatePhotoNav(); toast('Profile photo updated!'); };
+    r.readAsDataURL(this.files[0]);
+  };
+  document.getElementById('global-banner-input').onchange = function() {
+    if (!this.files[0]) return;
+    const r = new FileReader();
+    r.onload = e => { S.photoProfile.bannerUrl = e.target.result; persist(); renderPhotoProfile(); toast('Cover photo updated!'); };
+    r.readAsDataURL(this.files[0]);
+  };
+}
+
+function triggerAvatarUpload() { document.getElementById('global-av-input').click(); }
+function triggerBannerUpload() { document.getElementById('global-banner-input').click(); }
+
+// ═══════════════════════════════
+// PHOTOGRAPHER — EDIT PROFILE
+// ═══════════════════════════════
+const editTkData = { cameras:[], lenses:[], software:[], specialties:[] };
+function renderPhotoEdit() {
+  const p = S.photoProfile; if (!p) return;
+  const el = document.getElementById('p-page-edit');
+  // Pre-fill editTkData
+  ['cameras','lenses','software','specialties'].forEach(k => editTkData[k] = [...(p[k]||[])]);
+  el.innerHTML = `
+    <div class="title-row">
+      <div><div class="page-title">Edit Profile</div><div class="page-sub">Keep your profile up to date to attract the best opportunities</div></div>
+      <button class="btn btn-primary" onclick="savePhotoEdit()">Save Changes</button>
+    </div>
+
+    <!-- Profile Photos -->
+    <div class="edit-form-section">
+      <div class="edit-section-title">Profile & Cover Photos</div>
+      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+        <div>
+          <div style="font-size:.72rem;font-weight:600;color:var(--t2);margin-bottom:6px">Profile Photo</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:64px;height:64px;border-radius:50%;background:var(--blue);border:2px solid var(--b1);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.2rem" id="edit-av-preview">
+              ${p.avatarUrl ? `<img src="${p.avatarUrl}" style="width:100%;height:100%;object-fit:cover">` : (p.name||'P')[0].toUpperCase()}
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="triggerEditAvUpload()">Change Photo</button>
+            <input type="file" id="edit-av-input" accept="image/*" onchange="handleEditAvUpload(this)">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;font-weight:600;color:var(--t2);margin-bottom:6px">Cover Photo</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:120px;height:40px;border-radius:var(--r);background:${p.bannerUrl?'url('+p.bannerUrl+') center/cover':' linear-gradient(135deg,#1e3a5f,#0a66c2)'};border:1px solid var(--b1)" id="edit-banner-preview"></div>
+            <button class="btn btn-ghost btn-sm" onclick="triggerEditBannerUpload()">Change Cover</button>
+            <input type="file" id="edit-banner-input" accept="image/*" onchange="handleEditBannerUpload(this)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="edit-form-section">
+      <div class="edit-section-title">Basic Information</div>
+      <div class="form-row">
+        <div class="field"><label>Full Name</label><input id="ep-name" type="text" value="${esc(p.name||'')}"></div>
+        <div class="field"><label>Professional Title</label><input id="ep-title" type="text" value="${esc(p.title||'')}"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Location</label><input id="ep-loc" type="text" value="${esc(p.location||'')}"></div>
+        <div class="field"><label>Website</label><input id="ep-web" type="text" value="${esc(p.website||'')}"></div>
+      </div>
+      <div class="field"><label>Bio</label><textarea id="ep-bio" rows="4">${esc(p.bio||'')}</textarea></div>
+    </div>
+
+    <!-- Portfolio -->
+    <div class="edit-form-section">
+      <div class="edit-section-title">Portfolio Photos</div>
+      <div class="portfolio-grid" id="edit-portfolio-grid"></div>
+      <div style="margin-top:10px">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('portfolio-file-input').click()">+ Add Photos</button>
+      </div>
+    </div>
+
+    <!-- Experience -->
+    <div class="edit-form-section">
+      <div class="edit-section-title">Work Experience</div>
+      <div id="edit-exp-list">
+        ${(p.experience||[]).map((e,i) => `
+          <div class="edit-exp-item" data-i="${i}" style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px;margin-bottom:10px;position:relative">
+            <button onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--t3);cursor:pointer;font-size:1rem">✕</button>
+            <div class="form-row" style="margin-bottom:0">
+              <div class="field" style="margin:0"><label>Job Title</label><input type="text" class="ee-role" value="${esc(e.role||'')}"></div>
+              <div class="field" style="margin:0"><label>Company</label><input type="text" class="ee-co" value="${esc(e.company||'')}"></div>
+            </div>
+            <div class="field" style="margin-top:10px;margin-bottom:0"><label>Dates</label><input type="text" class="ee-dates" value="${esc(e.dates||'')}"></div>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-light btn-sm" onclick="addEditExp()">+ Add Experience</button>
+    </div>
+
+    <!-- Resume -->
+    <div class="edit-form-section">
+      <div class="edit-section-title">Resume</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('edit-res-input').click()">📎 ${p.resumeName ? 'Replace Resume' : 'Upload Resume'}</button>
+        <span id="edit-res-name" style="font-size:.78rem;color:var(--t3)">${p.resumeName ? esc(p.resumeName) : 'No resume uploaded'}</span>
+        <input type="file" id="edit-res-input" accept=".pdf" onchange="if(this.files[0]){document.getElementById('edit-res-name').textContent=this.files[0].name;S.photoProfile.resumeName=this.files[0].name;}">
+      </div>
+    </div>
+
+    <!-- Equipment -->
+    <div class="edit-form-section">
+      <div class="edit-section-title">Equipment & Skills</div>
+      <div class="form-row">
+        <div class="field"><label>Camera Bodies</label>
+          <div class="tag-input-wrap"><input id="eti-cam" placeholder="e.g. Sony A7 IV" onkeydown="etk('cameras',event)"><button class="btn btn-light btn-sm" onclick="etk('cameras')">Add</button></div>
+          <div class="tags-row" id="etw-cameras">${editTkData.cameras.map(t=>`<span class="tag">${esc(t)}<span class="tag-x" onclick="etkRemove('cameras','${esc(t)}')">✕</span></span>`).join('')}</div>
+        </div>
+        <div class="field"><label>Lenses</label>
+          <div class="tag-input-wrap"><input id="eti-lens" placeholder="e.g. 85mm f/1.4" onkeydown="etk('lenses',event)"><button class="btn btn-light btn-sm" onclick="etk('lenses')">Add</button></div>
+          <div class="tags-row" id="etw-lenses">${editTkData.lenses.map(t=>`<span class="tag">${esc(t)}<span class="tag-x" onclick="etkRemove('lenses','${esc(t)}')">✕</span></span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Editing Software</label>
+          <div class="tag-input-wrap"><input id="eti-sw" placeholder="e.g. Lightroom" onkeydown="etk('software',event)"><button class="btn btn-light btn-sm" onclick="etk('software')">Add</button></div>
+          <div class="tags-row" id="etw-software">${editTkData.software.map(t=>`<span class="tag">${esc(t)}<span class="tag-x" onclick="etkRemove('software','${esc(t)}')">✕</span></span>`).join('')}</div>
+        </div>
+        <div class="field"><label>Specialties</label>
+          <div class="tag-input-wrap"><input id="eti-spec" placeholder="e.g. Wedding" onkeydown="etk('specialties',event)"><button class="btn btn-light btn-sm" onclick="etk('specialties')">Add</button></div>
+          <div class="tags-row" id="etw-specialties">${editTkData.specialties.map(t=>`<span class="tag">${esc(t)}<span class="tag-x" onclick="etkRemove('specialties','${esc(t)}')">✕</span></span>`).join('')}</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+      <button class="btn btn-ghost" onclick="pNav('profile')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePhotoEdit()">Save Changes</button>
+    </div>
+  `;
+  renderEditPortfolio();
+  // Wire portfolio upload
+  document.getElementById('portfolio-file-input').onchange = function() {
+    const files = Array.from(this.files);
+    files.forEach(file => {
+      const r = new FileReader();
+      r.onload = e => {
+        if (!S.photoProfile.portfolio) S.photoProfile.portfolio = [];
+        S.photoProfile.portfolio.push(e.target.result);
+        renderEditPortfolio();
+      };
+      r.readAsDataURL(file);
+    });
+    this.value = '';
+  };
+}
+
+function renderEditPortfolio() {
+  const grid = document.getElementById('edit-portfolio-grid'); if (!grid) return;
+  const portfolio = S.photoProfile.portfolio || [];
+  grid.innerHTML = portfolio.map((img, i) => `
+    <div class="portfolio-thumb">
+      <img src="${img}" alt="Portfolio">
+      <div class="thumb-overlay">
+        <button class="thumb-del" data-pi="${i}">Remove</button>
+      </div>
+    </div>`).join('');
+  grid.querySelectorAll('.thumb-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      S.photoProfile.portfolio.splice(parseInt(btn.dataset.pi), 1);
+      renderEditPortfolio();
+    });
+  });
+}
+
+function triggerEditAvUpload() { document.getElementById('edit-av-input').click(); }
+function triggerEditBannerUpload() { document.getElementById('edit-banner-input').click(); }
+
+function handleEditAvUpload(input) {
+  if (!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    S.photoProfile.avatarUrl = e.target.result;
+    const prev = document.getElementById('edit-av-preview');
+    if (prev) prev.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+function handleEditBannerUpload(input) {
+  if (!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    S.photoProfile.bannerUrl = e.target.result;
+    const prev = document.getElementById('edit-banner-preview');
+    if (prev) prev.style.background = `url(${e.target.result}) center/cover`;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+const etkInputMap = { cameras:'eti-cam', lenses:'eti-lens', software:'eti-sw', specialties:'eti-spec' };
+function etk(type, event) {
+  if (event && event.key !== 'Enter') return;
+  const inp = document.getElementById(etkInputMap[type]);
+  const v = inp.value.trim(); if (!v || editTkData[type].includes(v)) { inp.value = ''; return; }
+  editTkData[type].push(v); inp.value = '';
+  renderEtw(type);
+}
+function etkRemove(type, v) { editTkData[type] = editTkData[type].filter(t => t !== v); renderEtw(type); }
+function renderEtw(type) {
+  const w = document.getElementById('etw-' + type); if (!w) return;
+  w.innerHTML = editTkData[type].map(t => `<span class="tag">${esc(t)}<span class="tag-x" onclick="etkRemove('${type}','${esc(t)}')">✕</span></span>`).join('');
+}
+
+function addEditExp() {
+  const id = 'eex' + Date.now();
+  const d = document.createElement('div');
+  d.id = id;
+  d.style.cssText = 'background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px;margin-bottom:10px;position:relative';
+  d.innerHTML = `<button onclick="document.getElementById('${id}').remove()" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--t3);cursor:pointer;font-size:1rem">✕</button>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="field" style="margin:0"><label>Job Title</label><input type="text" class="ee-role" placeholder="Lead Photographer"></div>
+      <div class="field" style="margin:0"><label>Company</label><input type="text" class="ee-co" placeholder="Studio Name"></div>
+    </div>
+    <div class="field" style="margin-top:10px;margin-bottom:0"><label>Dates</label><input type="text" class="ee-dates" placeholder="2021–Present"></div>`;
+  document.getElementById('edit-exp-list').appendChild(d);
+}
+
+function savePhotoEdit() {
+  const p = S.photoProfile;
+  p.name = document.getElementById('ep-name').value.trim() || p.name;
+  p.title = document.getElementById('ep-title').value.trim();
+  p.location = document.getElementById('ep-loc').value.trim();
+  p.website = document.getElementById('ep-web').value.trim();
+  p.bio = document.getElementById('ep-bio').value.trim();
+  p.cameras = [...editTkData.cameras]; p.lenses = [...editTkData.lenses];
+  p.software = [...editTkData.software]; p.specialties = [...editTkData.specialties];
+  p.experience = [];
+  document.querySelectorAll('#edit-exp-list > div').forEach(el => {
+    const role = el.querySelector('.ee-role')?.value;
+    const co = el.querySelector('.ee-co')?.value;
+    const dates = el.querySelector('.ee-dates')?.value;
+    if (role) p.experience.push({ role, company: co, dates });
+  });
+  persist();
+  updatePhotoNav();
+  toast('Profile saved! ✓');
+  pNav('profile');
+}
+
+// ═══════════════════════════════
+// BUSINESS NAVIGATION
+// ═══════════════════════════════
+const bPages = ['listings','post','applicants','messages','profile','edit'];
+function bNav(view) {
+  bPages.forEach(v => {
+    document.getElementById('b-page-' + v).classList.toggle('active', v === view);
+    const ni = document.getElementById('bni-' + v);
+    if (ni) ni.classList.toggle('active', v === view);
+  });
+  if (view === 'listings') renderBizListings();
+  else if (view === 'post') renderPostJob();
+  else if (view === 'applicants') renderApplicants();
+  else if (view === 'messages') renderMessages('business');
+  else if (view === 'profile') renderBizProfile();
+  else if (view === 'edit') renderBizEdit();
+}
+
+function myJobs() {
+  // Only return jobs that this business account actually posted on FrameLink.
+  return jobs.filter(j => S.bizJobIds.includes(j.id));
+}
+
+function renderBizListings() {
+  const mine = myJobs();
+  const el = document.getElementById('b-page-listings');
+  const totalApps = mine.reduce((s,j) => s + j.applicants.length, 0);
+  el.innerHTML = `
+    <div class="title-row">
+      <div><div class="page-title">My Listings</div><div class="page-sub">Manage your active job postings</div></div>
+      <button class="btn btn-primary" onclick="bNav('post')">+ Post New Job</button>
+    </div>
+    <div class="listings-stat-row">
+      <div class="lstat"><div class="lstat-n">${mine.length}</div><div class="lstat-l">Active Listings</div></div>
+      <div class="lstat"><div class="lstat-n">${totalApps}</div><div class="lstat-l">Total Applicants</div></div>
+      <div class="lstat"><div class="lstat-n">${mine.filter(j=>j.applicants.length>0).length}</div><div class="lstat-l">With Applicants</div></div>
+    </div>
+    ${mine.length === 0
+      ? `<div class="empty-state"><div class="empty-icon">📁</div><p>No listings yet. Post your first job!</p><button class="btn btn-primary" onclick="bNav('post')">Post a Job →</button></div>`
+      : mine.map(j => `
+          <div class="job-card" style="cursor:default">
+            <div class="jc-head">
+              <div class="jc-logo">${j.logo}</div>
+              <div style="flex:1;min-width:0">
+                <div class="jc-title">${esc(j.title)}</div>
+                <div class="jc-co">${esc(j.location)} · ${esc(j.type)} · ${esc(j.pay)}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+                <span class="pill pill-green">● Active</span>
+                <span style="font-size:.7rem;color:var(--t3)">${j.applicants.length} applicant${j.applicants.length===1?'':'s'}</span>
+              </div>
+            </div>
+            <div class="jc-tags">${j.tags.map(t=>`<span class="jc-tag">${esc(t)}</span>`).join('')}</div>
+            ${j.applicants.length ? `<button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="bNav('applicants')">View Applicants →</button>` : ''}
+          </div>`).join('')
+    }`;
+}
+
+function renderPostJob() {
+  const el = document.getElementById('b-page-post');
+  njTags = [];
+  el.innerHTML = `
+    <div class="title-row">
+      <div><div class="page-title">Post a Job</div><div class="page-sub">Find the right photographer for your project</div></div>
+    </div>
+    <div style="max-width:640px">
+      <div class="edit-form-section">
+        <div class="edit-section-title">Job Details</div>
+        <div class="field"><label>Job Title *</label><input id="nj-title" type="text" placeholder="e.g. Product Photographer for Spring Campaign"></div>
+        <div class="form-row">
+          <div class="field"><label>Job Type</label><select id="nj-type"><option>Freelance</option><option>Contract</option><option>Part-time</option><option>Full-time</option></select></div>
+          <div class="field"><label>Location</label><input id="nj-loc" type="text" placeholder="Remote or City, State" value="${esc(S.bizProfile?.location||'')}"></div>
+        </div>
+        <div class="field"><label>Pay Rate</label><input id="nj-pay" type="text" placeholder="e.g. $500–800/day or $45/hr"></div>
+        <div class="field"><label>Job Description *</label><textarea id="nj-desc" rows="5" placeholder="Describe the project scope, deliverables, timeline, and what you're looking for…"></textarea></div>
+        <div class="field"><label>Tags</label>
+          <div class="tag-input-wrap"><input id="nj-tag-input" placeholder="e.g. Wedding, Product" onkeydown="njTagAdd(event)"><button class="btn btn-light btn-sm" onclick="njTagAdd()">Add</button></div>
+          <div class="tags-row" id="nj-tags-row"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn btn-ghost" onclick="bNav('listings')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitJob()">Publish Listing →</button>
+      </div>
+    </div>`;
+}
+
+function njTagAdd(event) {
+  if (event && event.key !== 'Enter') return;
+  const inp = document.getElementById('nj-tag-input');
+  const v = inp.value.trim(); if (!v || njTags.includes(v)) { inp.value=''; return; }
+  njTags.push(v); inp.value='';
+  const row = document.getElementById('nj-tags-row');
+  if (row) row.innerHTML = njTags.map(t=>`<span class="tag">${esc(t)}<span class="tag-x" onclick="njTags=njTags.filter(x=>x!=='${esc(t)}');this.parentElement.remove()">✕</span></span>`).join('');
+}
+
+function submitJob() {
+  const title = document.getElementById('nj-title').value.trim();
+  const desc = document.getElementById('nj-desc').value.trim();
+  if (!title || !desc) return toast('Please fill in the title and description.', 'error');
+  const id = Date.now();
+  jobs.unshift({
+    id, bizEmail: S.email,
+    title, company: S.bizProfile?.name || 'Company',
+    location: document.getElementById('nj-loc').value.trim() || 'Remote',
+    type: document.getElementById('nj-type').value,
+    pay: document.getElementById('nj-pay').value.trim() || 'To be discussed',
+    posted: 'Just now', desc, tags: [...njTags], applicants: [], logo: '🏢'
+  });
+  S.bizJobIds.push(id); njTags=[];
+  saveJobs(); persist();
+  toast('Job posted! 🚀'); bNav('listings');
+}
+
+function renderApplicants() {
+  const mine = myJobs();
+  const all = mine.flatMap(j => j.applicants.map(a => ({ ...a, jobTitle:j.title, jobId:j.id, logo:j.logo })));
+  const el = document.getElementById('b-page-applicants');
+  el.innerHTML = `
+    <div class="page-title">Applicants</div>
+    <div class="page-sub">Review photographers who applied to your listings</div>
+    ${all.length === 0
+      ? `<div class="empty-state"><div class="empty-icon">👥</div><p>No applicants yet. Post a job to start receiving applications.</p><button class="btn btn-primary" onclick="bNav('post')">Post a Job →</button></div>`
+      : all.map((a,i) => {
+          const init = (a.name||'P')[0].toUpperCase();
+          const key = mkKey(a.applicantEmail, S.email, a.jobId);
+          const msgs = allMsgs[key] || [];
+          return `<div class="applicant-card">
+            <div class="app-av">${a.avatarUrl?`<img src="${a.avatarUrl}">`:''}${!a.avatarUrl?init:''}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+                <div>
+                  <div class="app-name">${esc(a.name)}</div>
+                  <div class="app-headline">${esc(a.title||'Photographer')}</div>
+                  <div class="app-meta">Applied for <strong>${esc(a.jobTitle)}</strong> · ${a.date}</div>
+                </div>
+                ${msgs.length?`<span class="pill pill-blue">💬 ${msgs.length} msg${msgs.length===1?'':'s'}</span>`:''}
+              </div>
+              ${(a.specialties||[]).length?`<div class="app-specs">${a.specialties.map(s=>`<span class="jc-tag">${esc(s)}</span>`).join('')}</div>`:''}
+              <div class="app-letter">${esc((a.coverLetter||'').substring(0,220))}${(a.coverLetter||'').length>220?'…':''}</div>
+              <div style="margin-top:10px">
+                <button class="btn btn-primary btn-sm app-msg-btn" data-idx="${i}">💬 Message</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('')
+    }`;
+  el.querySelectorAll('.app-msg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const a = all[parseInt(btn.dataset.idx)];
+      if (a) { S.curConvo = mkKey(a.applicantEmail, S.email, a.jobId); bNav('messages'); }
+    });
+  });
+}
+
+// ═══════════════════════════════
+// BUSINESS PROFILE
+// ═══════════════════════════════
+function renderBizProfile() {
+  const p = S.bizProfile; if (!p) return;
+  const el = document.getElementById('b-page-profile');
+  const init = (p.name||'B')[0].toUpperCase();
+  const mine = myJobs();
+  el.innerHTML = `
+    <div class="profile-page">
+      <div class="profile-banner-wrap">
+        <div class="profile-banner-img" style="${p.bannerUrl?'background-image:url('+p.bannerUrl+');background-size:cover;background-position:center':''}">
+          <button class="banner-edit-btn" onclick="triggerBizBannerUpload()">🖼 Change Cover Photo</button>
+        </div>
+        <div class="profile-meta-strip">
+          <div class="profile-av-row">
+            <div class="profile-av-wrap">
+              <div class="profile-av" onclick="triggerBizAvUpload()">
+                ${p.avatarUrl?`<img src="${p.avatarUrl}">`:''}${!p.avatarUrl?init:''}
+                <div class="profile-av-overlay"><span>📷</span>Change</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;padding-top:10px">
+              <button class="btn btn-outline btn-sm" onclick="bNav('edit')">✏️ Edit Profile</button>
+            </div>
+          </div>
+          <div class="profile-name" style="margin-top:8px">${esc(p.name||'Company Name')}</div>
+          <div class="profile-headline">${esc(p.industry||'Company')}</div>
+          <div class="profile-loc-row">
+            ${p.location?`<span>📍 ${esc(p.location)}</span>`:''}
+            ${p.website?`<a href="#" onclick="return false">🔗 ${esc(p.website)}</a>`:''}
+            ${p.size?`<span>👥 ${esc(p.size)}</span>`:''}
+          </div>
+          <div class="profile-stats-row">
+            <div class="pstat"><div class="pstat-n">${mine.length}</div><div class="pstat-l">Active Jobs</div></div>
+            <div class="pstat"><div class="pstat-n">${mine.reduce((s,j)=>s+j.applicants.length,0)}</div><div class="pstat-l">Total Applicants</div></div>
+            <div class="pstat"><div class="pstat-n">${Object.values(allMsgs).filter(m=>m.length>0).length}</div><div class="pstat-l">Conversations</div></div>
+          </div>
+        </div>
+      </div>
+      ${p.bio?`<div class="section-block"><h3>About<span class="edit-link" onclick="bNav('edit')">Edit</span></h3><p style="font-size:.875rem;color:var(--t2);line-height:1.7">${esc(p.bio)}</p></div>`:''}
+      <div class="section-block">
+        <h3>Active Listings</h3>
+        ${mine.length===0?`<p style="font-size:.8rem;color:var(--t3)">No active listings. <a onclick="bNav('post')" style="color:var(--blue);cursor:pointer;font-weight:600">Post a job →</a></p>`:
+          mine.map(j=>`<div class="exp-entry"><div class="exp-icon">${j.logo}</div><div class="exp-body"><div class="exp-role">${esc(j.title)}</div><div class="exp-co">${esc(j.location)} · ${esc(j.type)}</div><div class="exp-dates">${j.applicants.length} applicant${j.applicants.length===1?'':'s'} · ${esc(j.pay)}</div></div></div>`).join('')}
+      </div>
+    </div>`;
+
+  document.getElementById('global-av-input').onchange = function() {
+    if (!this.files[0]) return;
+    const r = new FileReader();
+    r.onload = e => { S.bizProfile.avatarUrl = e.target.result; persist(); renderBizProfile(); updateBizNav(); toast('Logo updated!'); };
+    r.readAsDataURL(this.files[0]);
+  };
+  document.getElementById('global-banner-input').onchange = function() {
+    if (!this.files[0]) return;
+    const r = new FileReader();
+    r.onload = e => { S.bizProfile.bannerUrl = e.target.result; persist(); renderBizProfile(); toast('Cover updated!'); };
+    r.readAsDataURL(this.files[0]);
+  };
+}
+
+function triggerBizAvUpload() { document.getElementById('global-av-input').click(); }
+function triggerBizBannerUpload() { document.getElementById('global-banner-input').click(); }
+
+// ═══════════════════════════════
+// BUSINESS — EDIT PROFILE
+// ═══════════════════════════════
+function renderBizEdit() {
+  const p = S.bizProfile; if (!p) return;
+  const el = document.getElementById('b-page-edit');
+  el.innerHTML = `
+    <div class="title-row">
+      <div><div class="page-title">Edit Company Profile</div><div class="page-sub">Keep your company information current</div></div>
+      <button class="btn btn-primary" onclick="saveBizEdit()">Save Changes</button>
+    </div>
+    <div class="edit-form-section">
+      <div class="edit-section-title">Company Photos</div>
+      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+        <div>
+          <div style="font-size:.72rem;font-weight:600;color:var(--t2);margin-bottom:6px">Company Logo</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:64px;height:64px;border-radius:50%;background:var(--blue);border:2px solid var(--b1);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.2rem" id="bedit-av-prev">
+              ${p.avatarUrl?`<img src="${p.avatarUrl}" style="width:100%;height:100%;object-fit:cover">`:(p.name||'B')[0].toUpperCase()}
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bedit-av-inp').click()">Change Logo</button>
+            <input type="file" id="bedit-av-inp" accept="image/*" onchange="hBizAvEdit(this)">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;font-weight:600;color:var(--t2);margin-bottom:6px">Cover Photo</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:120px;height:40px;border-radius:var(--r);background:${p.bannerUrl?'url('+p.bannerUrl+') center/cover':'linear-gradient(135deg,#1e3a5f,#0a66c2)'};border:1px solid var(--b1)" id="bedit-ban-prev"></div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bedit-ban-inp').click()">Change Cover</button>
+            <input type="file" id="bedit-ban-inp" accept="image/*" onchange="hBizBanEdit(this)">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="edit-form-section">
+      <div class="edit-section-title">Company Information</div>
+      <div class="form-row">
+        <div class="field"><label>Company Name</label><input id="bp-name" value="${esc(p.name||'')}"></div>
+        <div class="field"><label>Industry</label><select id="bp-ind"><option value="">Select…</option><option ${p.industry==='Photography Studio'?'selected':''}>Photography Studio</option><option ${p.industry==='Marketing Agency'?'selected':''}>Marketing Agency</option><option ${p.industry==='E-Commerce / Retail'?'selected':''}>E-Commerce / Retail</option><option ${p.industry==='Media & Publishing'?'selected':''}>Media &amp; Publishing</option><option ${p.industry==='Event Management'?'selected':''}>Event Management</option><option ${p.industry==='Real Estate'?'selected':''}>Real Estate</option><option ${p.industry==='Fashion & Apparel'?'selected':''}>Fashion &amp; Apparel</option><option ${p.industry==='Food & Beverage'?'selected':''}>Food &amp; Beverage</option><option ${p.industry==='Other'?'selected':''}>Other</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Location</label><input id="bp-loc" value="${esc(p.location||'')}"></div>
+        <div class="field"><label>Website</label><input id="bp-web" value="${esc(p.website||'')}"></div>
+      </div>
+      <div class="field"><label>Company Size</label><select id="bp-size"><option value="">Select…</option><option ${p.size==='1–10 employees'?'selected':''}>1–10 employees</option><option ${p.size==='11–50 employees'?'selected':''}>11–50 employees</option><option ${p.size==='51–200 employees'?'selected':''}>51–200 employees</option><option ${p.size==='201–500 employees'?'selected':''}>201–500 employees</option><option ${p.size==='500+ employees'?'selected':''}>500+ employees</option></select></div>
+      <div class="field"><label>About</label><textarea id="bp-bio" rows="4">${esc(p.bio||'')}</textarea></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="bNav('profile')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBizEdit()">Save Changes</button>
+    </div>`;
+}
+
+function hBizAvEdit(input) {
+  if (!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    S.bizProfile.avatarUrl = e.target.result;
+    const p = document.getElementById('bedit-av-prev');
+    if (p) p.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+function hBizBanEdit(input) {
+  if (!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    S.bizProfile.bannerUrl = e.target.result;
+    const p = document.getElementById('bedit-ban-prev');
+    if (p) p.style.background = `url(${e.target.result}) center/cover`;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+function saveBizEdit() {
+  const p = S.bizProfile;
+  p.name = document.getElementById('bp-name').value.trim() || p.name;
+  p.industry = document.getElementById('bp-ind').value;
+  p.location = document.getElementById('bp-loc').value.trim();
+  p.website = document.getElementById('bp-web').value.trim();
+  p.size = document.getElementById('bp-size').value;
+  p.bio = document.getElementById('bp-bio').value.trim();
+  persist(); updateBizNav();
+  toast('Company profile saved! ✓'); bNav('profile');
+}
+
+// ═══════════════════════════════
+// MESSAGES — REAL TWO-WAY
+// ═══════════════════════════════
+function mkKey(photoEmail, bizEmail, jobId) {
+  return 'p|' + photoEmail + '|b|' + bizEmail + '|j|' + jobId;
+}
+function parseKey(key) {
+  const m = key.match(/^p\|(.+)\|b\|(.+)\|j\|(.+)$/);
+  return m ? { photoEmail:m[1], bizEmail:m[2], jobId:m[3] } : null;
+}
+
+function getConvos() {
+  const convos = [];
+  if (S.type === 'photographer') {
+    jobs.forEach(j => {
+      if (!j.applicants.some(a => a.applicantEmail === S.email)) return;
+      const key = mkKey(S.email, j.bizEmail, j.id);
+      if (!allMsgs[key]) allMsgs[key] = [];
+      const msgs = allMsgs[key];
+      convos.push({ key, otherName:j.company, otherAv:'', logo:j.logo, jobTitle:j.title, lastMsg:msgs.length?msgs[msgs.length-1].text:'No messages yet', unread:S.unread.has(key) });
+    });
+  } else {
+    const seen = new Set();
+    myJobs().forEach(j => {
+      j.applicants.forEach(a => {
+        const key = mkKey(a.applicantEmail, S.email, j.id);
+        if (seen.has(key)) return; seen.add(key);
+        if (!allMsgs[key]) allMsgs[key] = [];
+        const msgs = allMsgs[key];
+        convos.push({ key, otherName:a.name, otherAv:a.avatarUrl||'', logo:j.logo, jobTitle:j.title, lastMsg:msgs.length?msgs[msgs.length-1].text:'No messages yet', unread:S.unread.has(key), applicantEmail:a.applicantEmail });
+      });
+    });
+  }
+  return convos;
+}
+
+function renderMessages(role) {
+  const pageEl = document.getElementById(role==='photographer'?'p-page-messages':'b-page-messages');
+  const convos = getConvos();
+  if (!S.curConvo && convos.length > 0) S.curConvo = convos[0].key;
+  const curConvo = convos.find(c => c.key === S.curConvo) || null;
+  if (curConvo && S.unread.has(curConvo.key)) {
+    S.unread.delete(curConvo.key); saveUnread(S.email, S.unread); updateBadges();
+  }
+  const msgs = curConvo ? (allMsgs[curConvo.key] || []) : [];
+
+  var convListHTML = '';
+  if (convos.length === 0) {
+    convListHTML = '<div style="padding:20px;text-align:center;font-size:.78rem;color:var(--t3)">' + (role==='photographer'?'Apply to jobs to start conversations':'Message applicants from the Applicants tab') + '</div>';
+  } else {
+    convos.forEach(function(c) {
+      var activeClass = c.key === S.curConvo ? ' active' : '';
+      var avH = c.otherAv ? '<img src="'+c.otherAv+'" style="width:100%;height:100%;object-fit:cover">' : (c.logo || c.otherName[0].toUpperCase());
+      var dot = c.unread ? '<div class="cr-dot"></div>' : '';
+      convListHTML += '<div class="convo-row'+activeClass+'" data-ck="'+encodeURIComponent(c.key)+'"><div class="cr-av">'+avH+'</div><div style="flex:1;min-width:0"><div class="cr-name">'+esc(c.otherName)+'</div><div class="cr-preview">'+esc(c.lastMsg)+'</div><div class="cr-job">'+esc(c.jobTitle)+'</div></div>'+dot+'</div>';
+    });
+  }
+
+  var msgsHTML = '';
+  if (msgs.length === 0) {
+    msgsHTML = '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);gap:8px"><div style="font-size:2rem;opacity:.18">💬</div><p style="font-size:.78rem">Start the conversation</p></div>';
+  } else {
+    msgs.forEach(function(m) {
+      var isMe = (role==='photographer' && m.senderType==='photographer') || (role==='business' && m.senderType==='business');
+      var senderLbl = !isMe ? '<div class="msg-sender">'+esc(m.senderName)+'</div>' : '';
+      msgsHTML += '<div class="msg-wrap '+( isMe?'me':'them')+'">'+senderLbl+'<div class="msg-bubble">'+esc(m.text)+'</div><div class="msg-time">'+m.time+'</div></div>';
+    });
+  }
+
+  var chatMain = '';
+  if (curConvo) {
+    var hAvH = curConvo.otherAv?'<img src="'+curConvo.otherAv+'" style="width:100%;height:100%;object-fit:cover">':(curConvo.logo||curConvo.otherName[0].toUpperCase());
+    chatMain = '<div class="chat-header"><div class="chat-av">'+hAvH+'</div><div><div class="chat-header-name">'+esc(curConvo.otherName)+'</div><div class="chat-header-sub">'+esc(curConvo.jobTitle)+'</div></div></div>' +
+      '<div class="chat-messages" id="chat-msg-area">'+msgsHTML+'</div>' +
+      '<div class="chat-input-bar"><textarea class="chat-textarea" id="chat-ta" placeholder="Write a message…" rows="1"></textarea><button class="chat-send" id="chat-send-btn">&#10148;</button></div>';
+  } else {
+    chatMain = '<div class="chat-empty-state"><div class="chat-empty-icon">💬</div><p style="font-size:.8rem">'+(role==='photographer'?'Select a conversation':'Select a conversation from the left')+'</p></div>';
+  }
+
+  pageEl.innerHTML = `
+    <div class="page-title" style="margin-bottom:14px">Messages</div>
+    <div class="msg-layout">
+      <div class="convo-panel">
+        <div class="convo-panel-head">Conversations (${convos.length})</div>
+        <div class="convo-list" id="convo-list-${role}">${convListHTML}</div>
+      </div>
+      <div class="chat-area">${chatMain}</div>
+    </div>`;
+
+  // Wire convo row clicks
+  pageEl.querySelectorAll('.convo-row').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var key = decodeURIComponent(row.getAttribute('data-ck'));
+      S.curConvo = key;
+      S.unread.delete(key); saveUnread(S.email, S.unread); updateBadges();
+      renderMessages(role);
+    });
+  });
+
+  // Wire send
+  var sendBtn = pageEl.querySelector('#chat-send-btn');
+  var ta = pageEl.querySelector('#chat-ta');
+  if (sendBtn && ta && curConvo) {
+    var _key = curConvo.key;
+    sendBtn.addEventListener('click', function() { doSend(_key, role); });
+    ta.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(_key, role); }
+    });
+  }
+  scrollChat();
+}
+
+function doSend(key, role) {
+  var ta = document.querySelector('#chat-ta');
+  if (!ta) return;
+  var text = ta.value.trim(); if (!text) return;
+  if (!allMsgs[key]) allMsgs[key] = [];
+  var senderType = role;
+  var senderName = role==='photographer' ? (S.photoProfile?.name||'Photographer') : (S.bizProfile?.name||'Business');
+  allMsgs[key].push({ senderType, senderName, text, time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) });
+  // Mark other party unread
+  var parts = parseKey(key);
+  if (parts) {
+    var otherEmail = role==='photographer' ? parts.bizEmail : parts.photoEmail;
+    var u = loadUnread(otherEmail); u.add(key); saveUnread(otherEmail, u);
+  }
+  saveMessages(); persist();
+  ta.value = '';
+  renderMessages(role);
+}
+
+function scrollChat() {
+  setTimeout(() => { var a = document.getElementById('chat-msg-area'); if(a) a.scrollTop = a.scrollHeight; }, 40);
+}
+
+function updateBadges() {
+  var pb = document.getElementById('p-msg-badge');
+  var bb = document.getElementById('b-msg-badge');
+  var c = S.unread.size;
+  if (pb) { pb.style.display = c>0?'flex':'none'; pb.textContent = c; }
+  if (bb) { bb.style.display = c>0?'flex':'none'; bb.textContent = c; }
+}
+
+// ═══════════════════════════════
+// UTILITIES
+// ═══════════════════════════════
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, type='success') {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div'); t.className = 'toast';
+  const color = type==='error'?'var(--red)':type==='warning'?'var(--amber)':'var(--green)';
+  t.innerHTML = `<div class="toast-bar" style="background:${color}"></div><span>${esc(msg)}</span>`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+</script>
+</body>
+</html>
