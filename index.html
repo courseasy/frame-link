@@ -1993,9 +1993,12 @@ async function renderJobs(search) {
   // ── Curated external listings (real photography job sources, updated manually) ──
   // To refresh: update LAST_CRAWL date and edit the entries below.
   // When a backend is added, replace this array with a fetch() call.
-  const LAST_CRAWL_DATE = new Date('2025-03-23');
-  const LAST_CRAWL = 'Mar 23, 2025';
-  const NEXT_CRAWL = new Date(LAST_CRAWL_DATE);
+  // Use the actual crawl date from live jobs if available, otherwise today
+  // Use most recent crawled_at from live jobs, or today for curated listings
+  const crawledDates = liveJobs ? liveJobs.map(j => j.crawled_at).filter(Boolean).sort().reverse() : [];
+  const lastCrawlDate = crawledDates.length > 0 ? new Date(crawledDates[0]) : new Date();
+  const LAST_CRAWL = lastCrawlDate.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  const NEXT_CRAWL = new Date(lastCrawlDate);
   NEXT_CRAWL.setDate(NEXT_CRAWL.getDate() + 1);
   const now = new Date();
   const hoursUntilRefresh = Math.max(0, Math.round((NEXT_CRAWL - now) / 36e5));
@@ -2164,7 +2167,7 @@ async function renderJobs(search) {
 
         <div class="feed-section-head">
           <span>Curated from the web</span><div></div>
-          <span class="feed-section-count">Updated ${LAST_CRAWL} · ${hoursUntilRefresh > 0 ? 'refreshes in ~' + hoursUntilRefresh + 'h' : 'refresh due'}</span>
+          <span class="feed-section-count">Updated ${LAST_CRAWL} · ${hoursUntilRefresh > 0 ? 'refreshes in ~' + hoursUntilRefresh + 'h' : 'updates daily at 6 AM'}</span>
         </div>
         <div class="crawl-notice">
           <span class="crawl-notice-icon">ℹ️</span>
