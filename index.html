@@ -1465,46 +1465,55 @@ let liveJobsCachedAt = null;
 
 async function fetchLiveJobs() {
   if (!CRAWLER_API_URL) return null;
-
-  // When running as a local file:// the browser blocks cross-origin requests.
-  // Skip silently — works fine once hosted on a real domain.
   if (window.location.protocol === 'file:') return null;
 
   // Use cache for 10 minutes
   if (liveJobsCache && liveJobsCachedAt && (Date.now() - liveJobsCachedAt) < 600_000) {
     return liveJobsCache;
   }
-  try {
+
+  // Render free tier spins down — retry once after 8s if first attempt fails
+  const attempt = async () => {
     const res = await fetch(CRAWLER_API_URL + '/jobs?limit=80');
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    if (data.ok && Array.isArray(data.jobs)) {
-      liveJobsCache = data.jobs.map(j => ({
-        id: j.id,
-        bizEmail: '__crawler__',
-        title: j.title,
-        company: j.company || 'Company',
-        location: j.location || (j.is_remote ? 'Remote' : 'Unspecified'),
-        type: j.type || 'Unspecified',
-        pay: j.pay || 'See listing',
-        posted: timeAgo(j.posted_at),
-        desc: j.description || '',
-        tags: j.tags || [],
-        applicants: [],
-        logo: '🌐',
-        sourceUrl: j.source_url || '',
-        isExternal: true,
-        source: j.source || 'Web',
-        sourceColor: '#2d6be4',
-      }));
-      liveJobsCachedAt = Date.now();
-      return liveJobsCache;
-    }
+    return res.json();
+  };
+
+  let data = null;
+  try {
+    data = await attempt();
   } catch (err) {
-    // Only warn if we're actually hosted (not a file:// issue)
-    if (window.location.protocol !== 'file:') {
-      console.warn('[FrameLink] Crawler fetch failed:', err.message);
+    console.log('[FrameLink] Crawler waking up, retrying in 8s...');
+    await new Promise(r => setTimeout(r, 8000));
+    try {
+      data = await attempt();
+    } catch (err2) {
+      console.warn('[FrameLink] Crawler unavailable:', err2.message);
+      return null;
     }
+  }
+
+  if (data && data.ok && Array.isArray(data.jobs)) {
+    liveJobsCache = data.jobs.map(j => ({
+      id: j.id,
+      bizEmail: '__crawler__',
+      title: j.title,
+      company: j.company || 'Company',
+      location: j.location || (j.is_remote ? 'Remote' : 'Unspecified'),
+      type: j.type || 'Unspecified',
+      pay: j.pay || 'See listing',
+      posted: timeAgo(j.posted_at),
+      desc: j.description || '',
+      tags: j.tags || [],
+      applicants: [],
+      logo: '🌐',
+      sourceUrl: j.source_url || '',
+      isExternal: true,
+      source: j.source || 'Web',
+      sourceColor: '#2d6be4',
+    }));
+    liveJobsCachedAt = Date.now();
+    return liveJobsCache;
   }
   return null;
 }
@@ -2018,10 +2027,12 @@ async function renderJobs(search) {
   // Build external listings from live crawler data or curated fallback
   const rawExternal = (liveJobs && liveJobs.length > 0) ? liveJobs : curatedListings;
 
-  const externalListings = rawExternal.filter(e => {
+  const externalListings = (liveJobs || []).filter(e => {
     if (!showExt) return false;
-    const matchSearch = !search || e.title.toLowerCase().includes(search) ||
-      (e.company||'').toLowerCase().includes(search) || (e.tags||[]).some(t => t.toLowerCase().includes(search)) ||
+    const matchSearch = !search ||
+      (e.title||'').toLowerCase().includes(search) ||
+      (e.company||'').toLowerCase().includes(search) ||
+      (e.tags||[]).some(t => t.toLowerCase().includes(search)) ||
       (e.desc||e.description||'').toLowerCase().includes(search);
     const matchType = !e.type || activeTypes.has(e.type);
     return matchSearch && matchType;
